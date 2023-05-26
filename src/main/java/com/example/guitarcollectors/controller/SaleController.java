@@ -27,15 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 public class SaleController {
     private final SaleService saleService;
-    // TODO:
-
-    // Продажу можно добавить только если купленный товар есть в наличии в нужном
-    // объёме + @Transactional
-
-    // При продаже автоматически уменьшать quantity товара на один.
-    // (Sales -> Warehouse)
-    // Post процент скидки на товар.
-    // (Sales -> Warehouse)
 
     // Показать все продажи
     @GetMapping("/")
@@ -79,4 +70,17 @@ public class SaleController {
         saleService.deleteSale(saleId);
     }
 
+    // Put Дать скидку процентом
+    @PutMapping(path = "/{saleId}/percentage-discount/{percentage}")
+    public ResponseEntity<Sale> giveDiscountByPercentage(@PathVariable Long saleId, @PathVariable Integer percentage) {
+        Sale sale = saleService.giveDiscountByPercentage(saleId, percentage);
+        return new ResponseEntity<>(sale, HttpStatus.CREATED);
+    }
+
+    // Put Дать скидку целым числом
+    @PutMapping(path = "/{saleId}/amount-discount/{amount}")
+    public ResponseEntity<Sale> giveDiscountOnAmount(@PathVariable Long saleId, @PathVariable Integer amount) {
+        Sale sale = saleService.giveDiscountOnAmount(saleId, amount);
+        return new ResponseEntity<>(sale, HttpStatus.CREATED);
+    }
 }

@@ -49,42 +49,44 @@ public class AppConfig {
     CommandLineRunner fillUpCharges(ExpenseItemsRepository expenseItemsRepository, ChargeRepository chargeRepository,
             SaleRepository saleRepository, WarehouseRepository warehouseRepository, DataSource dataSource) {
         return arge -> {
-            ResourceDatabasePopulator resourceDatabasePopulator = new ResourceDatabasePopulator(false, false, "UTF-8",
-                    new ClassPathResource(
-                            "Guitarcollectors.session.sql"));
-            resourceDatabasePopulator.execute(dataSource);
+            // ResourceDatabasePopulator resourceDatabasePopulator = new
+            // ResourceDatabasePopulator(false, false, "UTF-8",
+            // new ClassPathResource(
+            // "Guitarcollectors.session.sql"));
+            // resourceDatabasePopulator.execute(dataSource);
 
-            List<Charge> chargeList = new ArrayList<Charge>();
-            List<ExpenseItem> expenseItemsList = (List<ExpenseItem>) expenseItemsRepository.findAll();
-            for (ExpenseItem expenseItem : expenseItemsList) {
-                Charge charge = new Charge();
-                Integer amount = (int) ((Math.random() * (10000 - 1000)) + 1000);
-                charge.setAmount(new BigDecimal(amount));
-                charge.setChargeDate(LocalDateTime.now());
-                charge.setExpenseItem(expenseItem);
-                chargeList.add(charge);
-            }
-            chargeRepository.saveAll(chargeList);
+            // List<Charge> chargeList = new ArrayList<Charge>();
+            // List<ExpenseItem> expenseItemsList = (List<ExpenseItem>)
+            // expenseItemsRepository.findAll();
+            // for (ExpenseItem expenseItem : expenseItemsList) {
+            // Charge charge = new Charge();
+            // Integer amount = (int) ((Math.random() * (10000 - 1000)) + 1000);
+            // charge.setAmount(new BigDecimal(amount));
+            // charge.setChargeDate(LocalDateTime.now());
+            // charge.setExpenseItem(expenseItem);
+            // chargeList.add(charge);
+            // }
+            // chargeRepository.saveAll(chargeList);
 
-            List<Sale> saleList = new ArrayList<Sale>();
-            Sale newSale1 = new Sale();
-            Warehouse warehouse1 = warehouseRepository.findById((long) 1).get();
-            newSale1.setWarehouse(warehouse1);
-            newSale1.setAmount(warehouse1.getAmount());
-            newSale1.setQuantity(1);
-            newSale1.setSaleDate(LocalDateTime.now());
+            // List<Sale> saleList = new ArrayList<Sale>();
+            // Sale newSale1 = new Sale();
+            // Warehouse warehouse1 = warehouseRepository.findById((long) 1).get();
+            // newSale1.setWarehouse(warehouse1);
+            // newSale1.setAmount(warehouse1.getAmount());
+            // newSale1.setQuantity(1);
+            // newSale1.setSaleDate(LocalDateTime.now());
 
-            Sale newSale2 = new Sale();
-            Warehouse warehouse2 = warehouseRepository.findById((long) 2).get();
-            newSale2.setWarehouse(warehouse2);
-            newSale2.setAmount(warehouse2.getAmount());
-            newSale2.setQuantity(1);
-            newSale2.setSaleDate(LocalDateTime.now());
+            // Sale newSale2 = new Sale();
+            // Warehouse warehouse2 = warehouseRepository.findById((long) 2).get();
+            // newSale2.setWarehouse(warehouse2);
+            // newSale2.setAmount(warehouse2.getAmount());
+            // newSale2.setQuantity(1);
+            // newSale2.setSaleDate(LocalDateTime.now());
 
-            saleList.add(newSale1);
-            saleList.add(newSale2);
+            // saleList.add(newSale1);
+            // saleList.add(newSale2);
 
-            saleRepository.saveAll(saleList);
+            // saleRepository.saveAll(saleList);
         };
     }
 

@@ -1,5 +1,6 @@
 package com.example.guitarcollectors.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,6 +67,34 @@ public class SaleService {
 
     public void deleteSale(Long saleId) {
         repository.deleteById(saleId);
+    }
+
+    public Sale giveDiscountByPercentage(Long saleId, Integer percentage) {
+        Optional<Sale> response = repository.findById(saleId);
+        if (response.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+        Sale discountSale = response.get();
+        BigDecimal discount = BigDecimal.valueOf(percentage).divide(BigDecimal.valueOf(100));
+        BigDecimal currentPrice = discountSale.getAmount();
+        BigDecimal discountAmount = currentPrice.multiply(discount);
+        BigDecimal newPrice = currentPrice.subtract(discountAmount);
+        discountSale.setAmount(newPrice);
+
+        return repository.save(discountSale);
+    }
+
+    public Sale giveDiscountOnAmount(Long saleId, Integer amount) {
+        Optional<Sale> response = repository.findById(saleId);
+        if (response.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+        Sale discountSale = response.get();
+        BigDecimal currentPrice = discountSale.getAmount();
+        BigDecimal discountAmount = BigDecimal.valueOf(amount);
+        BigDecimal newPrice = currentPrice.subtract(discountAmount);
+        discountSale.setAmount(newPrice);
+        return repository.save(discountSale);
     }
 
 }
