@@ -6,9 +6,13 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 import com.example.guitarcollectors.model.Charge;
 import com.example.guitarcollectors.model.ExpenseItem;
@@ -43,8 +47,13 @@ public class AppConfig {
 
     @Bean
     CommandLineRunner fillUpCharges(ExpenseItemsRepository expenseItemsRepository, ChargeRepository chargeRepository,
-            SaleRepository saleRepository, WarehouseRepository warehouseRepository) {
+            SaleRepository saleRepository, WarehouseRepository warehouseRepository, DataSource dataSource) {
         return arge -> {
+            ResourceDatabasePopulator resourceDatabasePopulator = new ResourceDatabasePopulator(false, false, "UTF-8",
+                    new ClassPathResource(
+                            "Guitarcollectors.session.sql"));
+            resourceDatabasePopulator.execute(dataSource);
+
             List<Charge> chargeList = new ArrayList<Charge>();
             List<ExpenseItem> expenseItemsList = (List<ExpenseItem>) expenseItemsRepository.findAll();
             for (ExpenseItem expenseItem : expenseItemsList) {
