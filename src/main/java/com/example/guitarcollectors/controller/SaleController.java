@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.guitarcollectors.model.Sale;
 import com.example.guitarcollectors.service.SaleService;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,6 +51,7 @@ public class SaleController {
 
     // Добавить продажу (по умолчанию quantity = 1)
     @PostMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
     public ResponseEntity<Sale> addNewSale(@RequestBody Sale newSale) {
         Sale sale = saleService.addNewSale(newSale);
         return new ResponseEntity<>(sale, HttpStatus.CREATED);
@@ -57,6 +59,7 @@ public class SaleController {
 
     // Добавить продажу со своим quantity
     @PostMapping(path = "/{quantity}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
     public ResponseEntity<Sale> addNewSale(@RequestBody Sale newSale, @PathVariable Integer quantity) {
         Sale sale = saleService.addNewSale(newSale, quantity);
         return new ResponseEntity<>(sale, HttpStatus.CREATED);

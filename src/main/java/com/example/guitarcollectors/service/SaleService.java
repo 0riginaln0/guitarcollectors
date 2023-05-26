@@ -30,21 +30,25 @@ public class SaleService {
     }
 
     public Sale addNewSale(Sale newSale) {
-        Integer warehouseQuantity = warehouse.getProductQuantityById(newSale.getWarehouse().getId());
+        Warehouse product = warehouse.getProductById(newSale.getWarehouse().getId());
+        Integer warehouseQuantity = product.getQuantity();
         if (warehouseQuantity.equals(0)) {
             throw new IllegalArgumentException();
         }
-        Warehouse updatedWarehouse = warehouse.getProductById(newSale.getWarehouse().getId());
+        Warehouse updatedWarehouse = product;
         updatedWarehouse.setQuantity(warehouseQuantity - 1);
+        newSale.setAmount(product.getAmount());
         warehouse.updateProduct(newSale.getWarehouse().getId(), updatedWarehouse);
         return repository.save(newSale);
     }
 
     public Sale addNewSale(Sale newSale, Integer quantity) {
-        Integer warehouseQuantity = warehouse.getProductQuantityById(newSale.getWarehouse().getId());
+        Warehouse product = warehouse.getProductById(newSale.getWarehouse().getId());
+        Integer warehouseQuantity = product.getQuantity();
         if (warehouseQuantity.compareTo(quantity) < 0) {
             throw new IllegalArgumentException();
         }
+        newSale.setAmount(product.getAmount());
         Warehouse updatedWarehouse = warehouse.getProductById(newSale.getWarehouse().getId());
         updatedWarehouse.setQuantity(warehouseQuantity - quantity);
         warehouse.updateProduct(newSale.getWarehouse().getId(), updatedWarehouse);

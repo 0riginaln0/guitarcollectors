@@ -12,11 +12,11 @@ VALUES ('Rent'),
     ('Repurchase'),
     ('Shipping');
 INSERT INTO warehouse (amount, name, quantity)
-VALUES (60000, 'Bacchus Vintage Stratocaster', 0),
+VALUES (60000, 'Bacchus Vintage Stratocaster', 1),
     (
         53000,
         'Greco Boogie BG-1100T Supreme Sound Buster',
-        0
+        1
     ),
     (
         49000,
@@ -56,7 +56,3 @@ VALUES (60000, 'Bacchus Vintage Stratocaster', 0),
     (22000, 'Jackson Partcaster Superstrat', 1),
     (35000, 'Ibanez GA35TCE-DVS', 1),
     (85000, 'Fender Highway One Stratocaster', 1);
--- INSERT INTO charges (amount, charge_date, expense_item_id)
--- VALUES (100.00, '2022-01-01 12:00:00', 1),
---     (50.00, '2022-01-02 09:30:00', 1),
---     (75.00, '2022-01-03 15:45:00', 2);
