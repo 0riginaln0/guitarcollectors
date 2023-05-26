@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-GuitarcollectorsApplication<guitarcollectors>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.guitarcollectors.GuitarcollectorsApplication",
+            "projectName": "guitarcollectors",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
