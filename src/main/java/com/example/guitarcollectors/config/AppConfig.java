@@ -18,6 +18,8 @@ import com.example.guitarcollectors.repository.ExpenseItemsRepository;
 
 @Configuration
 public class AppConfig {
+    // TODO:
+    // Добавление продаж
     @Bean
     public Comparator<Warehouse> amountAscendingComparator() {
         return new Comparator<Warehouse>() {

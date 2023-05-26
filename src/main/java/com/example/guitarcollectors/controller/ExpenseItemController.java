@@ -29,6 +29,8 @@ public class ExpenseItemController {
     private final ExpenseItemService expenseItemService;
 
     // TODO:
+    // Удалить можно только ту статью затрат, по которой ещё не понесли расходов
+
     // Выкуп гитары + автоматически выставить её на продажу с наценкой 20%
     // (ExpenseItems -> Charges -> Warehouse)
 

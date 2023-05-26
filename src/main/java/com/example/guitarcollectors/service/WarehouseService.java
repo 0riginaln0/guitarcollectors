@@ -114,12 +114,17 @@ public class WarehouseService {
         return outputList;
     }
 
-    public Integer getProductQuantity() {
+    public Integer getAllProductsQuantity() {
         List<Warehouse> list = getAllProducts();
         Integer quantity = 0;
         for (Warehouse product : list) {
             quantity += product.getQuantity();
         }
         return quantity;
+    }
+
+    public Integer getProductQuantityById(Long id) {
+        Warehouse warehouse = getProductById(id);
+        return warehouse.getQuantity();
     }
 }

@@ -9,13 +9,4 @@ public class GuitarcollectorsApplication {
 		SpringApplication.run(GuitarcollectorsApplication.class, args);
 	}
 
-	// To-Do
-	// Выкуп гитары + автоматически выставить её на продажу с наценкой 20%
-	// (ExpenseItems -> Charges -> Warehouse)
-
-	// При продаже автоматически уменьшать quantity товара на один.
-	// (Sales -> Warehouse)
-
-	// Post процент скидки на товар.
-	// (Sales -> Warehouse)
 }

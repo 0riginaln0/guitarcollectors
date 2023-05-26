@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.example.guitarcollectors.model.Sale;
+import com.example.guitarcollectors.model.Warehouse;
 import com.example.guitarcollectors.repository.SaleRepository;
 
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class SaleService {
     private final SaleRepository repository;
+    private final WarehouseService warehouse;
 
     public List<Sale> getAllSales() {
         return (List<Sale>) repository.findAll();
@@ -28,6 +30,24 @@ public class SaleService {
     }
 
     public Sale addNewSale(Sale newSale) {
+        Integer warehouseQuantity = warehouse.getProductQuantityById(newSale.getWarehouse().getId());
+        if (warehouseQuantity.equals(0)) {
+            throw new IllegalArgumentException();
+        }
+        Warehouse updatedWarehouse = warehouse.getProductById(newSale.getWarehouse().getId());
+        updatedWarehouse.setQuantity(warehouseQuantity - 1);
+        warehouse.updateProduct(newSale.getWarehouse().getId(), updatedWarehouse);
+        return repository.save(newSale);
+    }
+
+    public Sale addNewSale(Sale newSale, Integer quantity) {
+        Integer warehouseQuantity = warehouse.getProductQuantityById(newSale.getWarehouse().getId());
+        if (warehouseQuantity.compareTo(quantity) < 0) {
+            throw new IllegalArgumentException();
+        }
+        Warehouse updatedWarehouse = warehouse.getProductById(newSale.getWarehouse().getId());
+        updatedWarehouse.setQuantity(warehouseQuantity - quantity);
+        warehouse.updateProduct(newSale.getWarehouse().getId(), updatedWarehouse);
         return repository.save(newSale);
     }
 

@@ -30,6 +30,8 @@ public class WarehouseController {
     // TODO:
     // Разделить логику сортировки товаров и показа товаров по цене
 
+    // Удалить можно только тот товар, который ещё ни разу не продали
+
     // Показать все товары
     @GetMapping("/")
     public ResponseEntity<List<Warehouse>> getAllProducts() {
@@ -72,7 +74,7 @@ public class WarehouseController {
     // Количество товаров на складе
     @GetMapping("/quantity")
     public ResponseEntity<Integer> getProductQuantity() {
-        return new ResponseEntity<>(warehouseService.getProductQuantity(), HttpStatus.OK);
+        return new ResponseEntity<>(warehouseService.getAllProductsQuantity(), HttpStatus.OK);
     }
 
     // Средняя стоимость товара
