@@ -10,9 +10,11 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.example.guitarcollectors.model.Sale;
 import com.example.guitarcollectors.model.Warehouse;
 import com.example.guitarcollectors.repository.WarehouseRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -62,9 +64,10 @@ public class WarehouseService {
     }
 
     public void deleteProduct(Long productId) {
-        // To-Do
-        // Сделать проверку, что если к товару привязана продажа, то удалять его нельзя
-        repository.deleteById(productId);
+        List<Sale> sales = getSalesForProductId(productId);
+        if (sales.isEmpty()) {
+            repository.deleteById(productId);
+        }
     }
 
     public List<Warehouse> getAllInStock() {
@@ -126,5 +129,11 @@ public class WarehouseService {
     public Integer getProductQuantityById(Long id) {
         Warehouse warehouse = getProductById(id);
         return warehouse.getQuantity();
+    }
+
+    public List<Sale> getSalesForProductId(Long productId) {
+        Warehouse products = repository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product is not found"));
+        return products.getSales();
     }
 }

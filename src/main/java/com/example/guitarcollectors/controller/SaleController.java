@@ -66,8 +66,9 @@ public class SaleController {
 
     // Удалить продажу
     @DeleteMapping(path = "/{saleId}")
-    public void deleteSale(@PathVariable Long saleId) {
+    public ResponseEntity<String> deleteSale(@PathVariable Long saleId) {
         saleService.deleteSale(saleId);
+        return new ResponseEntity<>("Resource deleted successfully", HttpStatus.NO_CONTENT);
     }
 
     // Put Дать скидку процентом

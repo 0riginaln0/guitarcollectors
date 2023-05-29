@@ -27,9 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 public class ExpenseItemController {
     private final ExpenseItemService expenseItemService;
-
     // TODO:
-    // Удалить можно только ту статью затрат, по которой ещё не понесли расходов
 
     // Выкуп гитары + автоматически выставить её на продажу с наценкой 20%
     // (ExpenseItems -> Charges -> Warehouse)
@@ -44,12 +42,6 @@ public class ExpenseItemController {
     @GetMapping("/{expenseItemId}")
     public ResponseEntity<ExpenseItem> getExpenseItemById(@PathVariable Long expenseItemId) {
         return new ResponseEntity<>(expenseItemService.getExpenseItemById(expenseItemId), HttpStatus.OK);
-    }
-
-    // Показать расходы по определённой статье
-    @GetMapping("/charges/{expenseItemId}")
-    public ResponseEntity<List<Charge>> getChargesForExpenseItem(@PathVariable Long expenseItemId) {
-        return new ResponseEntity<>(expenseItemService.getChargesForExpenseItem(expenseItemId), HttpStatus.OK);
     }
 
     // Добавить статью
@@ -69,8 +61,14 @@ public class ExpenseItemController {
 
     // Удалить статью
     @DeleteMapping(path = "/{expenseItemId}")
-    public void deleteExpenseItem(@PathVariable Long expenseItemId) {
+    public ResponseEntity<String> deleteExpenseItem(@PathVariable Long expenseItemId) {
         expenseItemService.deleteExpenseItem(expenseItemId);
+        return new ResponseEntity<String>("Resource deleted successfully", HttpStatus.NO_CONTENT);
     }
 
+    // Показать расходы по определённой статье
+    @GetMapping("/charges/{expenseItemId}")
+    public ResponseEntity<List<Charge>> getChargesForExpenseItem(@PathVariable Long expenseItemId) {
+        return new ResponseEntity<>(expenseItemService.getChargesForExpenseItem(expenseItemId), HttpStatus.OK);
+    }
 }

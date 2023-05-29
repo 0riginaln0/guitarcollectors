@@ -31,15 +31,16 @@ public class Charge {
     private Long id;
 
     // Сумма
+    @Column(nullable = false)
     private BigDecimal amount;
 
     // Дата
-    @Column(name = "charge_date")
+    @Column(name = "charge_date", nullable = false)
     private LocalDateTime chargeDate;
 
     // Статья расхода
     @ManyToOne
-    @JoinColumn(name = "expense_item_id")
+    @JoinColumn(name = "expense_item_id", nullable = false)
     @JsonIgnoreProperties("charges")
     private ExpenseItem expenseItem;
 

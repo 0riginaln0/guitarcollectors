@@ -3,6 +3,7 @@ package com.example.guitarcollectors.model;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -27,9 +28,11 @@ public class ExpenseItem {
     private Long id;
 
     // Наименование статьи
+    @Column(nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "expenseItem", cascade = CascadeType.ALL) // fetch = FetchType.EAGER
+    @OneToMany(mappedBy = "expenseItem", cascade = CascadeType.ALL)
+    @Column(nullable = false)
     private List<Charge> charges;
 
     public ExpenseItem(String name) {

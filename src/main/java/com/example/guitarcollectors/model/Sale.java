@@ -31,18 +31,20 @@ public class Sale {
     private Long id;
 
     // Стоимость одной единицы товара
+    @Column(nullable = false)
     private BigDecimal amount;
 
     // Количество товара
+    @Column(nullable = false)
     private Integer quantity;
 
     // Дата продажи
-    @Column(name = "sale_date")
+    @Column(name = "sale_date", nullable = false)
     private LocalDateTime saleDate;
 
     // Товар
     @ManyToOne
-    @JoinColumn(name = "warehouse_id")
+    @JoinColumn(name = "warehouse_id", nullable = false)
     @JsonIgnoreProperties("sales")
     private Warehouse warehouse;
 

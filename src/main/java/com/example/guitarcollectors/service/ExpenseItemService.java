@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.example.guitarcollectors.exception.ExpenseItemNotFoundException;
 import com.example.guitarcollectors.model.Charge;
 import com.example.guitarcollectors.model.ExpenseItem;
 import com.example.guitarcollectors.repository.ExpenseItemsRepository;
@@ -28,11 +29,9 @@ public class ExpenseItemService {
     }
 
     public ExpenseItem getExpenseItemById(Long expenseItemId) {
-        Optional<ExpenseItem> response = repository.findById(expenseItemId);
-        if (response.isEmpty()) {
-            throw new IllegalArgumentException();
-        }
-        return response.get();
+        ExpenseItem response = repository.findById(expenseItemId)
+                .orElseThrow(() -> new ExpenseItemNotFoundException(expenseItemId));
+        return response;
     }
 
     public ExpenseItem addNewExpenseItem(ExpenseItem newExpenseItem) {
@@ -49,10 +48,10 @@ public class ExpenseItemService {
     }
 
     public void deleteExpenseItem(Long expenseItemId) {
-        // TODO:
-        // Проверка, если в таблице расходов есть запись, ссылающаяся на статью
-        // расходов, то нельзя удалять.
-        repository.deleteById(expenseItemId);
+        List<Charge> charges = getChargesForExpenseItem(expenseItemId);
+        if (charges.isEmpty()) {
+            repository.deleteById(expenseItemId);
+        }
     }
 
 }

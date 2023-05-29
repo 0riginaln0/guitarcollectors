@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.guitarcollectors.model.Sale;
 import com.example.guitarcollectors.model.Warehouse;
 import com.example.guitarcollectors.service.WarehouseService;
 
@@ -29,8 +30,6 @@ public class WarehouseController {
     private final WarehouseService warehouseService;
     // TODO:
     // Разделить логику сортировки товаров и показа товаров по цене
-
-    // Удалить можно только тот товар, который ещё ни разу не продали
 
     // Показать все товары
     @GetMapping("/")
@@ -61,8 +60,9 @@ public class WarehouseController {
 
     // Удалить товар
     @DeleteMapping(path = "/{productId}")
-    public void deleteProduct(@PathVariable Long productId) {
+    public ResponseEntity<String> deleteProduct(@PathVariable Long productId) {
         warehouseService.deleteProduct(productId);
+        return new ResponseEntity<>("Resource deleted successfully", HttpStatus.NO_CONTENT);
     }
 
     // Показать все товары, которые есть в наличии
@@ -99,6 +99,11 @@ public class WarehouseController {
     @GetMapping("/from/{price}")
     public ResponseEntity<List<Warehouse>> getByPricefrom(@PathVariable BigDecimal price) {
         return new ResponseEntity<>(warehouseService.getByPricefrom(price), HttpStatus.OK);
+    }
+
+    @GetMapping("/sales/{productId}")
+    public ResponseEntity<List<Sale>> getSalesForProductId(Long productId) {
+        return new ResponseEntity<>(warehouseService.getSalesForProductId(productId), HttpStatus.OK);
     }
 
 }

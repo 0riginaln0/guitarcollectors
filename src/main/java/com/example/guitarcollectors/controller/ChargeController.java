@@ -56,8 +56,9 @@ public class ChargeController {
 
     // Удалить расход
     @DeleteMapping(path = "/{chargeId}")
-    public void deleteCharge(@PathVariable Long chargeId) {
+    public ResponseEntity<String> deleteCharge(@PathVariable Long chargeId) {
         chargeService.deleteCharge(chargeId);
+        return new ResponseEntity<>("Resource deleted successfully", HttpStatus.NO_CONTENT);
     }
 
 }

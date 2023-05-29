@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,15 +27,19 @@ public class Warehouse {
     private Long id;
 
     // Наименование
+    @Column(nullable = false)
     private String name;
 
     // Количество товара
+    @Column(nullable = false)
     private Integer quantity;
 
     // Стоимость одной единицы товара
+    @Column(nullable = false)
     private BigDecimal amount;
 
-    @OneToMany(mappedBy = "warehouse", cascade = CascadeType.ALL) // fetch = FetchType.EAGER
+    @OneToMany(mappedBy = "warehouse", cascade = CascadeType.ALL)
+    @Column(nullable = false)
     private List<Sale> Sales;
 
     public Warehouse(String name, Integer quantity, BigDecimal amount) {
