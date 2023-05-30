@@ -20,9 +20,7 @@ import com.example.guitarcollectors.model.Charge;
 import com.example.guitarcollectors.service.ChargeService;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @RestController()
 @RequestMapping("api/charges")
 @AllArgsConstructor
@@ -56,8 +54,8 @@ public class ChargeController {
         if (newCharge.getExpenseItem().getId() == null) {
             throw new BadRequestException("Charge's expense item id cannot be null");
         }
-        if (newCharge.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new BadRequestException("Charge amount cannot be less than or equal to zero");
+        if (newCharge.getAmount().compareTo(BigDecimal.ZERO) < 0) {
+            throw new BadRequestException("Charge's amount cannot be less than zero");
         }
     }
 
@@ -65,6 +63,7 @@ public class ChargeController {
     @PutMapping(path = "/{chargeId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Charge> updateCharge(@PathVariable Long chargeId,
             @RequestBody Charge updatedCharge) {
+        validate(updatedCharge);
         Charge charge = chargeService.updateCharge(chargeId, updatedCharge);
         return new ResponseEntity<>(charge, HttpStatus.CREATED);
     }

@@ -20,9 +20,7 @@ import com.example.guitarcollectors.model.ExpenseItem;
 import com.example.guitarcollectors.service.ExpenseItemService;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @RestController()
 @RequestMapping("api/expense-items")
 @AllArgsConstructor
@@ -66,7 +64,7 @@ public class ExpenseItemController {
     @DeleteMapping(path = "/{expenseItemId}")
     public ResponseEntity<String> deleteExpenseItem(@PathVariable Long expenseItemId) {
         expenseItemService.deleteExpenseItem(expenseItemId);
-        return new ResponseEntity<String>("Resource deleted successfully", HttpStatus.OK);
+        return new ResponseEntity<String>("Expense item deleted successfully", HttpStatus.OK);
     }
 
     // Показать расходы по определённой статье

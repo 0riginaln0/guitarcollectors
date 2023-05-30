@@ -6,15 +6,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.example.guitarcollectors.exception.ForbiddenRequestException;
+import com.example.guitarcollectors.exception.MyEntityNotFoundException;
 import com.example.guitarcollectors.model.Sale;
 import com.example.guitarcollectors.model.Warehouse;
 import com.example.guitarcollectors.repository.WarehouseRepository;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -24,16 +24,42 @@ public class WarehouseService {
     private final Comparator<Warehouse> amountAscendingComparator;
     private final Comparator<Warehouse> amountDescendingComparator;
 
+    // Показать все товары
     public List<Warehouse> getAllProducts() {
         return (List<Warehouse>) repository.findAll();
     }
 
+    // Показать товар по id
     public Warehouse getProductById(Long productId) {
-        Optional<Warehouse> response = repository.findById(productId);
-        if (response.isEmpty()) {
-            throw new IllegalArgumentException();
+        Warehouse response = repository.findById(productId).orElseThrow(
+                () -> new MyEntityNotFoundException("Product with id "
+                        + productId + " is not found"));
+        return response;
+    }
+
+    // Добавить товар
+    public Warehouse addNewProduct(Warehouse newProduct) {
+        return repository.save(newProduct);
+    }
+
+    // Обновить товар
+    public Warehouse updateProduct(Long productId, Warehouse updatedProduct) {
+        repository.findById(productId).orElseThrow(
+                () -> new MyEntityNotFoundException("Product with id "
+                        + productId + " is not found"));
+        updatedProduct.setId(productId);
+        return repository.save(updatedProduct);
+    }
+
+    // Удалить товар
+    public void deleteProduct(Long productId) {
+        List<Sale> sales = getSalesForProductId(productId);
+        if (sales.isEmpty()) {
+            repository.deleteById(productId);
+        } else {
+            throw new ForbiddenRequestException(
+                    "Cannot delete product with id " + productId + " because it's being used.");
         }
-        return response.get();
     }
 
     // Средняя цена всех товаров
@@ -48,26 +74,6 @@ public class WarehouseService {
         }
 
         return totalAmount.divide(BigDecimal.valueOf(list.size()), 2, RoundingMode.HALF_UP);
-    }
-
-    public Warehouse addNewProduct(Warehouse newProduct) {
-        return repository.save(newProduct);
-    }
-
-    public Warehouse updateProduct(Long productId, Warehouse updatedProduct) {
-        Optional<Warehouse> response = repository.findById(productId);
-        if (response.isEmpty()) {
-            throw new IllegalArgumentException();
-        }
-        updatedProduct.setId(productId);
-        return repository.save(updatedProduct);
-    }
-
-    public void deleteProduct(Long productId) {
-        List<Sale> sales = getSalesForProductId(productId);
-        if (sales.isEmpty()) {
-            repository.deleteById(productId);
-        }
     }
 
     public List<Warehouse> getAllInStock() {
@@ -132,8 +138,9 @@ public class WarehouseService {
     }
 
     public List<Sale> getSalesForProductId(Long productId) {
-        Warehouse products = repository.findById(productId)
-                .orElseThrow(() -> new EntityNotFoundException("Product is not found"));
+        Warehouse products = repository.findById(productId).orElseThrow(
+                () -> new MyEntityNotFoundException("Product with id "
+                        + productId + " is not found"));
         return products.getSales();
     }
 }

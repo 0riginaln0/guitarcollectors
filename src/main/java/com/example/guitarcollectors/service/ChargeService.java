@@ -18,16 +18,19 @@ public class ChargeService {
     private final ChargeRepository repository;
     private final ExpenseItemService expenseItemService;
 
+    // Показать все расходы
     public List<Charge> getAllCharges() {
         return (List<Charge>) repository.findAll();
     }
 
+    // Показать расход по id
     public Charge getChargeItemById(Long chargeId) {
         Charge response = repository.findById(chargeId)
-                .orElseThrow(() -> new MyEntityNotFoundException("Charge with id " + chargeId + "is not found"));
+                .orElseThrow(() -> new MyEntityNotFoundException("Charge with id " + chargeId + " is not found"));
         return response;
     }
 
+    // Добавить расход
     public Charge addNewCharge(Charge newCharge) {
         expenseItemService.getExpenseItemById(newCharge.getExpenseItem().getId());
         newCharge.setChargeDate(LocalDateTime.now());
@@ -35,16 +38,17 @@ public class ChargeService {
         return addedCharge;
     }
 
+    // Обновить расход
     public Charge updateCharge(Long chargeId, Charge updatedCharge) {
-        Optional<Charge> response = repository.findById(chargeId);
-        if (response.isEmpty()) {
-            throw new IllegalArgumentException();
-        }
+        repository.findById(chargeId)
+                .orElseThrow(() -> new MyEntityNotFoundException("Charge with id " + chargeId + " is not found"));
         updatedCharge.setId(chargeId);
         return repository.save(updatedCharge);
     }
 
     public void deleteCharge(Long chargeId) {
+        repository.findById(chargeId)
+                .orElseThrow(() -> new MyEntityNotFoundException("Charge with id " + chargeId + " is not found"));
         repository.deleteById(chargeId);
     }
 

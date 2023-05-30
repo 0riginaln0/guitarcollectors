@@ -25,14 +25,15 @@ public class ExpenseItemService {
     // Показать статью расходов по id
     public ExpenseItem getExpenseItemById(Long expenseItemId) {
         ExpenseItem response = repository.findById(expenseItemId)
-                .orElseThrow(() -> new MyEntityNotFoundException("expense item with id " + expenseItemId));
+                .orElseThrow(
+                        () -> new MyEntityNotFoundException("expense item with id "
+                                + expenseItemId + " is not found"));
         return response;
     }
 
     // Добавить статью
     public ExpenseItem addNewExpenseItem(ExpenseItem newExpenseItem) {
-        ExpenseItem savedExpenseItem = repository.save(newExpenseItem);
-        return savedExpenseItem;
+        return repository.save(newExpenseItem);
     }
 
     // Обновить статью

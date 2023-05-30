@@ -1,11 +1,14 @@
 package com.example.guitarcollectors.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.example.guitarcollectors.exception.ForbiddenRequestException;
+import com.example.guitarcollectors.exception.MyEntityNotFoundException;
 import com.example.guitarcollectors.model.Sale;
 import com.example.guitarcollectors.model.Warehouse;
 import com.example.guitarcollectors.repository.SaleRepository;
@@ -18,81 +21,74 @@ public class SaleService {
     private final SaleRepository repository;
     private final WarehouseService warehouse;
 
+    // Показать все продажи
     public List<Sale> getAllSales() {
         return (List<Sale>) repository.findAll();
     }
 
+    // Показать продажу по id
     public Sale getSaleItemById(Long saleId) {
-        Optional<Sale> response = repository.findById(saleId);
-        if (response.isEmpty()) {
-            throw new IllegalArgumentException();
-        }
-        return response.get();
+        Sale response = repository.findById(saleId)
+                .orElseThrow(() -> new MyEntityNotFoundException("Sale with id " + saleId + " is not found"));
+        return response;
     }
 
+    // Добавить продажу
     public Sale addNewSale(Sale newSale) {
         Warehouse product = warehouse.getProductById(newSale.getWarehouse().getId());
         Integer warehouseQuantity = product.getQuantity();
-        if (warehouseQuantity.equals(0)) {
-            throw new IllegalArgumentException();
+        if (warehouseQuantity.compareTo(newSale.getQuantity()) < 0) {
+            throw new ForbiddenRequestException(
+                    "Not enough product on warehouse. Required quantity: " + newSale.getQuantity() +
+                            ". Quantity in warehouse: " + warehouseQuantity);
         }
-        Warehouse updatedWarehouse = product;
-        updatedWarehouse.setQuantity(warehouseQuantity - 1);
-        newSale.setAmount(product.getAmount());
-        warehouse.updateProduct(newSale.getWarehouse().getId(), updatedWarehouse);
-        return repository.save(newSale);
-    }
 
-    public Sale addNewSale(Sale newSale, Integer quantity) {
-        Warehouse product = warehouse.getProductById(newSale.getWarehouse().getId());
-        Integer warehouseQuantity = product.getQuantity();
-        if (warehouseQuantity.compareTo(quantity) < 0) {
-            throw new IllegalArgumentException();
-        }
-        newSale.setAmount(product.getAmount());
         Warehouse updatedWarehouse = warehouse.getProductById(newSale.getWarehouse().getId());
-        updatedWarehouse.setQuantity(warehouseQuantity - quantity);
+        updatedWarehouse.setQuantity(warehouseQuantity - newSale.getQuantity());
         warehouse.updateProduct(newSale.getWarehouse().getId(), updatedWarehouse);
+
+        newSale.setSaleDate(LocalDateTime.now());
+        newSale.setAmount(product.getAmount());
         return repository.save(newSale);
     }
 
+    // Обновить продажу
     public Sale updateSale(Long saleId, Sale updatedSale) {
-        Optional<Sale> response = repository.findById(saleId);
-        if (response.isEmpty()) {
-            throw new IllegalArgumentException();
-        }
+        repository.findById(saleId)
+                .orElseThrow(() -> new MyEntityNotFoundException("Sale with id " + saleId + " is not found"));
         updatedSale.setId(saleId);
         return repository.save(updatedSale);
     }
 
     public void deleteSale(Long saleId) {
+        repository.findById(saleId)
+                .orElseThrow(() -> new MyEntityNotFoundException("Sale with id " + saleId + " is not found"));
         repository.deleteById(saleId);
     }
 
     public Sale giveDiscountByPercentage(Long saleId, Integer percentage) {
-        Optional<Sale> response = repository.findById(saleId);
-        if (response.isEmpty()) {
-            throw new IllegalArgumentException();
-        }
-        Sale discountSale = response.get();
+        Sale response = repository.findById(saleId)
+                .orElseThrow(() -> new MyEntityNotFoundException("Sale with id " + saleId + " is not found"));
+        Sale discountSale = response;
+
         BigDecimal discount = BigDecimal.valueOf(percentage).divide(BigDecimal.valueOf(100));
         BigDecimal currentPrice = discountSale.getAmount();
         BigDecimal discountAmount = currentPrice.multiply(discount);
         BigDecimal newPrice = currentPrice.subtract(discountAmount);
-        discountSale.setAmount(newPrice);
 
+        discountSale.setAmount(newPrice);
         return repository.save(discountSale);
     }
 
     public Sale giveDiscountOnAmount(Long saleId, Integer amount) {
-        Optional<Sale> response = repository.findById(saleId);
-        if (response.isEmpty()) {
-            throw new IllegalArgumentException();
-        }
-        Sale discountSale = response.get();
+        Sale response = repository.findById(saleId)
+                .orElseThrow(() -> new MyEntityNotFoundException("Sale with id " + saleId + " is not found"));
+        Sale discountSale = response;
+
         BigDecimal currentPrice = discountSale.getAmount();
         BigDecimal discountAmount = BigDecimal.valueOf(amount);
         BigDecimal newPrice = currentPrice.subtract(discountAmount);
+
         discountSale.setAmount(newPrice);
         return repository.save(discountSale);
     }

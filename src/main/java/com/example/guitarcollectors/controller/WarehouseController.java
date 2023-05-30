@@ -15,14 +15,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.guitarcollectors.exception.BadRequestException;
 import com.example.guitarcollectors.model.Sale;
 import com.example.guitarcollectors.model.Warehouse;
 import com.example.guitarcollectors.service.WarehouseService;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @RestController()
 @RequestMapping("api/warehouse")
 @AllArgsConstructor
@@ -46,6 +45,7 @@ public class WarehouseController {
     // Добавить товар
     @PostMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Warehouse> addNewProduct(@RequestBody Warehouse newProduct) {
+        validateProduct(newProduct);
         Warehouse product = warehouseService.addNewProduct(newProduct);
         return new ResponseEntity<>(product, HttpStatus.CREATED);
     }
@@ -54,6 +54,7 @@ public class WarehouseController {
     @PutMapping(path = "/{productId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Warehouse> updateExpenseItem(@PathVariable Long productId,
             @RequestBody Warehouse updatedProduct) {
+        validateProduct(updatedProduct);
         Warehouse product = warehouseService.updateProduct(productId, updatedProduct);
         return new ResponseEntity<>(product, HttpStatus.CREATED);
     }
@@ -62,7 +63,7 @@ public class WarehouseController {
     @DeleteMapping(path = "/{productId}")
     public ResponseEntity<String> deleteProduct(@PathVariable Long productId) {
         warehouseService.deleteProduct(productId);
-        return new ResponseEntity<>("Resource deleted successfully", HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>("Product deleted successfully", HttpStatus.NO_CONTENT);
     }
 
     // Показать все товары, которые есть в наличии
@@ -106,4 +107,24 @@ public class WarehouseController {
         return new ResponseEntity<>(warehouseService.getSalesForProductId(productId), HttpStatus.OK);
     }
 
+    public void validateProduct(Warehouse product) {
+        if (product.getName() == null) {
+            throw new BadRequestException("Product's name cannot be null");
+        }
+        if (product.getName().isEmpty()) {
+            throw new BadRequestException("Product's name cannot be empty");
+        }
+        if (product.getQuantity() == null) {
+            throw new BadRequestException("Product's quantity cannot be null");
+        }
+        if (product.getQuantity() < 1) {
+            throw new BadRequestException("Product's quantity cannot be less than 1");
+        }
+        if (product.getAmount() == null) {
+            throw new BadRequestException("Product's amount cannot be null");
+        }
+        if (product.getAmount().compareTo(BigDecimal.ZERO) < 0) {
+            throw new BadRequestException("Product's amount cannot be less than zero");
+        }
+    }
 }
