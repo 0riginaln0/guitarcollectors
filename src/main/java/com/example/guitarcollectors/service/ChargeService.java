@@ -1,12 +1,12 @@
 package com.example.guitarcollectors.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.example.guitarcollectors.controller.ExpenseItemController;
-import com.example.guitarcollectors.exception.ChargeNotFoundException;
+import com.example.guitarcollectors.exception.MyEntityNotFoundException;
 import com.example.guitarcollectors.model.Charge;
 import com.example.guitarcollectors.repository.ChargeRepository;
 
@@ -24,12 +24,13 @@ public class ChargeService {
 
     public Charge getChargeItemById(Long chargeId) {
         Charge response = repository.findById(chargeId)
-                .orElseThrow(() -> new ChargeNotFoundException(chargeId));
+                .orElseThrow(() -> new MyEntityNotFoundException("Charge with id " + chargeId + "is not found"));
         return response;
     }
 
     public Charge addNewCharge(Charge newCharge) {
         expenseItemService.getExpenseItemById(newCharge.getExpenseItem().getId());
+        newCharge.setChargeDate(LocalDateTime.now());
         Charge addedCharge = repository.save(newCharge);
         return addedCharge;
     }

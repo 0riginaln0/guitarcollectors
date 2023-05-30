@@ -6,22 +6,22 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import com.example.guitarcollectors.exception.ExpenseItemHasChargesException;
-import com.example.guitarcollectors.exception.ExpenseItemNotFoundException;
+import com.example.guitarcollectors.exception.ForbiddenRequestException;
+import com.example.guitarcollectors.exception.MyEntityNotFoundException;
 
 @ControllerAdvice
 public class ServiceLayerAdvice {
     @ResponseBody
-    @ExceptionHandler(ExpenseItemHasChargesException.class)
+    @ExceptionHandler(ForbiddenRequestException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    String expenseItemHasChargesHandler(ExpenseItemHasChargesException ex) {
+    String forbiddenRequestHandler(ForbiddenRequestException ex) {
         return ex.getMessage();
     }
 
     @ResponseBody
-    @ExceptionHandler(ExpenseItemNotFoundException.class)
+    @ExceptionHandler(MyEntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    String expenseItemNotFoundHandler(ExpenseItemNotFoundException ex) {
+    String myEntityNotFoundHandler(MyEntityNotFoundException ex) {
         return ex.getMessage();
     }
 }

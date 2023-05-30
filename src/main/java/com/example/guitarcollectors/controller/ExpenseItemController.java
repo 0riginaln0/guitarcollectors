@@ -14,8 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.guitarcollectors.exception.ExpenseItemNameIsEmptyException;
-import com.example.guitarcollectors.exception.ExpenseItemNameIsNullException;
+import com.example.guitarcollectors.exception.BadRequestException;
 import com.example.guitarcollectors.model.Charge;
 import com.example.guitarcollectors.model.ExpenseItem;
 import com.example.guitarcollectors.service.ExpenseItemService;
@@ -54,15 +53,6 @@ public class ExpenseItemController {
         return new ResponseEntity<>(expenseItem, HttpStatus.CREATED);
     }
 
-    public void validateExpenseItem(ExpenseItem expenseItem) {
-        if (expenseItem.getName() == null) {
-            throw new ExpenseItemNameIsNullException("Expense item name cannot be null");
-        }
-        if (expenseItem.getName().isEmpty()) {
-            throw new ExpenseItemNameIsEmptyException("Expense item name cannot be empty");
-        }
-    }
-
     // Обновить статью
     @PutMapping(path = "/{expenseItemId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ExpenseItem> updateExpenseItem(@PathVariable Long expenseItemId,
@@ -83,5 +73,14 @@ public class ExpenseItemController {
     @GetMapping("/charges/{expenseItemId}")
     public ResponseEntity<List<Charge>> getChargesForExpenseItem(@PathVariable Long expenseItemId) {
         return new ResponseEntity<>(expenseItemService.getChargesForExpenseItem(expenseItemId), HttpStatus.OK);
+    }
+
+    public void validateExpenseItem(ExpenseItem expenseItem) {
+        if (expenseItem.getName() == null) {
+            throw new BadRequestException("Expense item's name cannot be null");
+        }
+        if (expenseItem.getName().isEmpty()) {
+            throw new BadRequestException("Expense item's name cannot be empty");
+        }
     }
 }

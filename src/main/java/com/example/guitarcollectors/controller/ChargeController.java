@@ -1,5 +1,6 @@
 package com.example.guitarcollectors.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.guitarcollectors.exception.BadRequestException;
 import com.example.guitarcollectors.model.Charge;
 import com.example.guitarcollectors.service.ChargeService;
 
@@ -42,8 +44,21 @@ public class ChargeController {
     // Добавить расход
     @PostMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Charge> addNewCharge(@RequestBody Charge newCharge) {
+        validate(newCharge);
         Charge charge = chargeService.addNewCharge(newCharge);
         return new ResponseEntity<>(charge, HttpStatus.CREATED);
+    }
+
+    public void validate(Charge newCharge) {
+        if (newCharge.getAmount() == null) {
+            throw new BadRequestException("Charge's amount cannot be null");
+        }
+        if (newCharge.getExpenseItem().getId() == null) {
+            throw new BadRequestException("Charge's expense item id cannot be null");
+        }
+        if (newCharge.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BadRequestException("Charge amount cannot be less than or equal to zero");
+        }
     }
 
     // Обновить расход

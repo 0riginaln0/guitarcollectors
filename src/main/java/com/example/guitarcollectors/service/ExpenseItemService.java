@@ -1,17 +1,15 @@
 package com.example.guitarcollectors.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.example.guitarcollectors.exception.ExpenseItemHasChargesException;
-import com.example.guitarcollectors.exception.ExpenseItemNotFoundException;
+import com.example.guitarcollectors.exception.ForbiddenRequestException;
+import com.example.guitarcollectors.exception.MyEntityNotFoundException;
 import com.example.guitarcollectors.model.Charge;
 import com.example.guitarcollectors.model.ExpenseItem;
 import com.example.guitarcollectors.repository.ExpenseItemsRepository;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -25,16 +23,9 @@ public class ExpenseItemService {
     }
 
     // Показать статью расходов по id
-    public List<Charge> getChargesForExpenseItem(Long expenseItemId) {
-        ExpenseItem expenseItem = repository.findById(expenseItemId)
-                .orElseThrow(() -> new ExpenseItemNotFoundException(expenseItemId));
-        return expenseItem.getCharges();
-    }
-
-    // Показать статью расходов по id
     public ExpenseItem getExpenseItemById(Long expenseItemId) {
         ExpenseItem response = repository.findById(expenseItemId)
-                .orElseThrow(() -> new ExpenseItemNotFoundException(expenseItemId));
+                .orElseThrow(() -> new MyEntityNotFoundException("expense item with id " + expenseItemId));
         return response;
     }
 
@@ -44,20 +35,30 @@ public class ExpenseItemService {
         return savedExpenseItem;
     }
 
+    // Обновить статью
     public ExpenseItem updateExpenseItem(Long expenseItemId, ExpenseItem updatedExpenseItem) {
         repository.findById(expenseItemId)
-                .orElseThrow(() -> new ExpenseItemNotFoundException(expenseItemId));
+                .orElseThrow(() -> new MyEntityNotFoundException("expense item with id " + expenseItemId));
         updatedExpenseItem.setId(expenseItemId);
         return repository.save(updatedExpenseItem);
     }
 
+    // Удалить статью
     public void deleteExpenseItem(Long expenseItemId) {
         List<Charge> charges = getChargesForExpenseItem(expenseItemId);
         if (charges.isEmpty()) {
             repository.deleteById(expenseItemId);
         } else {
-            throw new ExpenseItemHasChargesException(expenseItemId);
+            throw new ForbiddenRequestException(
+                    "Cannot delete expense item with id " + expenseItemId + " because it's being used.");
         }
+    }
+
+    // Показать расходы по определённой статье
+    public List<Charge> getChargesForExpenseItem(Long expenseItemId) {
+        ExpenseItem expenseItem = repository.findById(expenseItemId)
+                .orElseThrow(() -> new MyEntityNotFoundException("Can't find expense item with id " + expenseItemId));
+        return expenseItem.getCharges();
     }
 
 }

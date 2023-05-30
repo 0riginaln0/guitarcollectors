@@ -39,7 +39,7 @@ public class Sale {
     private Integer quantity;
 
     // Дата продажи
-    @Column(name = "sale_date", nullable = false)
+    @Column(name = "sale_date")
     private LocalDateTime saleDate;
 
     // Товар

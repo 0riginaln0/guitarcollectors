@@ -35,7 +35,7 @@ public class Charge {
     private BigDecimal amount;
 
     // Дата
-    @Column(name = "charge_date", nullable = false)
+    @Column(name = "charge_date")
     private LocalDateTime chargeDate;
 
     // Статья расхода
