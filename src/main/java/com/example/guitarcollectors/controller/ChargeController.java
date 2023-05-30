@@ -74,5 +74,4 @@ public class ChargeController {
         chargeService.deleteCharge(chargeId);
         return new ResponseEntity<>("Resource deleted successfully", HttpStatus.NO_CONTENT);
     }
-
 }

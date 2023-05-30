@@ -20,6 +20,7 @@ import com.example.guitarcollectors.model.Sale;
 import com.example.guitarcollectors.model.Warehouse;
 import com.example.guitarcollectors.service.WarehouseService;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 @RestController()
@@ -27,8 +28,6 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class WarehouseController {
     private final WarehouseService warehouseService;
-    // TODO:
-    // Разделить логику сортировки товаров и показа товаров по цене
 
     // Показать все товары
     @GetMapping("/")
@@ -74,11 +73,17 @@ public class WarehouseController {
 
     // Количество товаров на складе
     @GetMapping("/quantity")
-    public ResponseEntity<Integer> getProductQuantity() {
+    public ResponseEntity<Integer> getAllProductsQuantity() {
         return new ResponseEntity<>(warehouseService.getAllProductsQuantity(), HttpStatus.OK);
     }
 
-    // Средняя стоимость товара
+    // Количество товара на складе
+    @GetMapping("/quantity/{productId}")
+    public ResponseEntity<Integer> getProductQuantity(@PathVariable Long productId) {
+        return new ResponseEntity<>(warehouseService.getProductQuantity(productId), HttpStatus.OK);
+    }
+
+    // Средняя цена всех товаров
     @GetMapping("/average")
     public ResponseEntity<BigDecimal> getAverageAmount() {
         return new ResponseEntity<BigDecimal>(warehouseService.getAverageAmount(), HttpStatus.OK);
@@ -102,9 +107,28 @@ public class WarehouseController {
         return new ResponseEntity<>(warehouseService.getByPricefrom(price), HttpStatus.OK);
     }
 
+    // Показать продажи определённого товара
     @GetMapping("/sales/{productId}")
     public ResponseEntity<List<Sale>> getSalesForProductId(Long productId) {
         return new ResponseEntity<>(warehouseService.getSalesForProductId(productId), HttpStatus.OK);
+    }
+
+    // Выкупить гитару + автоматически выставить её на продажу с выбранной наценкой
+    // (ExpenseItems -> Charges -> Warehouse)
+    @PostMapping(path = "/repurchase/{margin}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<Warehouse> addRepurchasedProduct(@RequestBody Warehouse newProduct,
+            @PathVariable BigDecimal margin) {
+        validateProduct(newProduct);
+        validateMargin(margin);
+        Warehouse product = warehouseService.addRepurchasedProduct(newProduct, margin);
+        return new ResponseEntity<>(product, HttpStatus.CREATED);
+    }
+
+    public void validateMargin(BigDecimal margin) {
+        if (margin.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BadRequestException("Margine can't be less than 0");
+        }
     }
 
     public void validateProduct(Warehouse product) {

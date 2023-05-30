@@ -2,6 +2,7 @@ package com.example.guitarcollectors.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import com.example.guitarcollectors.exception.ForbiddenRequestException;
 import com.example.guitarcollectors.exception.MyEntityNotFoundException;
+import com.example.guitarcollectors.model.Charge;
+import com.example.guitarcollectors.model.ExpenseItem;
 import com.example.guitarcollectors.model.Sale;
 import com.example.guitarcollectors.model.Warehouse;
 import com.example.guitarcollectors.repository.WarehouseRepository;
@@ -21,6 +24,8 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class WarehouseService {
     private final WarehouseRepository repository;
+    private final ChargeService chargeService;
+    private final ExpenseItemService expenseItemService;
     private final Comparator<Warehouse> amountAscendingComparator;
     private final Comparator<Warehouse> amountDescendingComparator;
 
@@ -62,6 +67,34 @@ public class WarehouseService {
         }
     }
 
+    // Показать все товары, которые есть в наличии
+    public List<Warehouse> getAllInStock() {
+        List<Warehouse> list = getAllProducts();
+        List<Warehouse> outputList = new ArrayList<Warehouse>();
+        for (Warehouse product : list) {
+            if (product.getQuantity() > 0) {
+                outputList.add(product);
+            }
+        }
+        return outputList;
+    }
+
+    // Количество товаров на складе
+    public Integer getAllProductsQuantity() {
+        List<Warehouse> list = getAllProducts();
+        Integer quantity = 0;
+        for (Warehouse product : list) {
+            quantity += product.getQuantity();
+        }
+        return quantity;
+    }
+
+    // Количество товара на складе
+    public Integer getProductQuantity(Long id) {
+        Warehouse warehouse = getProductById(id);
+        return warehouse.getQuantity();
+    }
+
     // Средняя цена всех товаров
     public BigDecimal getAverageAmount() {
         List<Warehouse> list = (List<Warehouse>) repository.findAll();
@@ -76,17 +109,7 @@ public class WarehouseService {
         return totalAmount.divide(BigDecimal.valueOf(list.size()), 2, RoundingMode.HALF_UP);
     }
 
-    public List<Warehouse> getAllInStock() {
-        List<Warehouse> list = getAllProducts();
-        List<Warehouse> outputList = new ArrayList<Warehouse>();
-        for (Warehouse product : list) {
-            if (product.getQuantity() > 0) {
-                outputList.add(product);
-            }
-        }
-        return outputList;
-    }
-
+    // Показать все товары, по названию
     public List<Warehouse> getAllByName(String name) {
         List<Warehouse> list = getAllProducts();
         List<Warehouse> outputList = new ArrayList<Warehouse>();
@@ -98,6 +121,7 @@ public class WarehouseService {
         return outputList;
     }
 
+    // Показать товары по цене до {price} и сортированном по убыванию виде
     public List<Warehouse> getByPriceUpTo(BigDecimal price) {
         List<Warehouse> list = getAllProducts();
         List<Warehouse> outputList = new ArrayList<Warehouse>();
@@ -110,6 +134,7 @@ public class WarehouseService {
         return outputList;
     }
 
+    // Показать товары по цене от {price} в сортированном по возростанию виде
     public List<Warehouse> getByPricefrom(BigDecimal price) {
         List<Warehouse> list = getAllProducts();
         List<Warehouse> outputList = new ArrayList<Warehouse>();
@@ -123,24 +148,25 @@ public class WarehouseService {
         return outputList;
     }
 
-    public Integer getAllProductsQuantity() {
-        List<Warehouse> list = getAllProducts();
-        Integer quantity = 0;
-        for (Warehouse product : list) {
-            quantity += product.getQuantity();
-        }
-        return quantity;
-    }
-
-    public Integer getProductQuantityById(Long id) {
-        Warehouse warehouse = getProductById(id);
-        return warehouse.getQuantity();
-    }
-
+    // Показать продажи определённого товара
     public List<Sale> getSalesForProductId(Long productId) {
         Warehouse products = repository.findById(productId).orElseThrow(
                 () -> new MyEntityNotFoundException("Product with id "
                         + productId + " is not found"));
         return products.getSales();
+    }
+
+    // Выкупить гитару + автоматически выставить её на продажу с выбранной наценкой
+    // (ExpenseItems -> Charges -> Warehouse)
+    public Warehouse addRepurchasedProduct(Warehouse newProduct, BigDecimal margin) {
+        ExpenseItem repurchaseExpenseItem = expenseItemService.getExpenseItemById((long) 9);
+        Charge repurchaseCharge = new Charge(newProduct.getAmount(), LocalDateTime.now(), repurchaseExpenseItem);
+        chargeService.addNewCharge(repurchaseCharge);
+        BigDecimal marginAmount = newProduct.getAmount().multiply(margin).divide(new BigDecimal(100));
+        BigDecimal sellingPrice = newProduct.getAmount().add(marginAmount);
+        sellingPrice = sellingPrice.divide(new BigDecimal(1000), 2, RoundingMode.UP).multiply(new BigDecimal(1000));
+
+        newProduct.setAmount(sellingPrice);
+        return repository.save(newProduct);
     }
 }

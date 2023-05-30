@@ -3,7 +3,6 @@ package com.example.guitarcollectors.service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -60,12 +59,14 @@ public class SaleService {
         return repository.save(updatedSale);
     }
 
+    // Удалить продажу
     public void deleteSale(Long saleId) {
         repository.findById(saleId)
                 .orElseThrow(() -> new MyEntityNotFoundException("Sale with id " + saleId + " is not found"));
         repository.deleteById(saleId);
     }
 
+    // Put Дать скидку процентом
     public Sale giveDiscountByPercentage(Long saleId, Integer percentage) {
         Sale response = repository.findById(saleId)
                 .orElseThrow(() -> new MyEntityNotFoundException("Sale with id " + saleId + " is not found"));
@@ -80,6 +81,7 @@ public class SaleService {
         return repository.save(discountSale);
     }
 
+    // Put Дать скидку абсолютным значением
     public Sale giveDiscountOnAmount(Long saleId, Integer amount) {
         Sale response = repository.findById(saleId)
                 .orElseThrow(() -> new MyEntityNotFoundException("Sale with id " + saleId + " is not found"));

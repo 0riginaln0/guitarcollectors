@@ -2,7 +2,6 @@ package com.example.guitarcollectors.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -46,6 +45,7 @@ public class ChargeService {
         return repository.save(updatedCharge);
     }
 
+    // Удалить расход
     public void deleteCharge(Long chargeId) {
         repository.findById(chargeId)
                 .orElseThrow(() -> new MyEntityNotFoundException("Charge with id " + chargeId + " is not found"));

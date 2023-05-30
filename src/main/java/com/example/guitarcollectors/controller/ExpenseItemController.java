@@ -26,10 +26,6 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class ExpenseItemController {
     private final ExpenseItemService expenseItemService;
-    // TODO:
-
-    // Выкуп гитары + автоматически выставить её на продажу с наценкой 20%
-    // (ExpenseItems -> Charges -> Warehouse)
 
     // Показать все статьи расходов
     @GetMapping("/")

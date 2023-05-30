@@ -1,6 +1,5 @@
 package com.example.guitarcollectors.controller;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -84,8 +83,8 @@ public class SaleController {
         return new ResponseEntity<>(sale, HttpStatus.CREATED);
     }
 
-    // Put Дать скидку целым числом
-    @PutMapping(path = "/{saleId}/amount-discount/{amount}")
+    // Put Дать скидку абсолютным значением
+    @PutMapping(path = "/{saleId}/absolute-discount/{amount}")
     public ResponseEntity<Sale> giveDiscountOnAmount(@PathVariable Long saleId, @PathVariable Integer amount) {
         Sale sale = saleService.giveDiscountOnAmount(saleId, amount);
         return new ResponseEntity<>(sale, HttpStatus.CREATED);
