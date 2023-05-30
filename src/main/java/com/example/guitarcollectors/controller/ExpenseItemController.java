@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.guitarcollectors.exception.ExpenseItemNameIsEmptyException;
+import com.example.guitarcollectors.exception.ExpenseItemNameIsNullException;
 import com.example.guitarcollectors.model.Charge;
 import com.example.guitarcollectors.model.ExpenseItem;
 import com.example.guitarcollectors.service.ExpenseItemService;
@@ -47,14 +49,25 @@ public class ExpenseItemController {
     // Добавить статью
     @PostMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ExpenseItem> addNewExpenseItem(@RequestBody ExpenseItem newExpenseItem) {
+        validateExpenseItem(newExpenseItem);
         ExpenseItem expenseItem = expenseItemService.addNewExpenseItem(newExpenseItem);
         return new ResponseEntity<>(expenseItem, HttpStatus.CREATED);
+    }
+
+    public void validateExpenseItem(ExpenseItem expenseItem) {
+        if (expenseItem.getName() == null) {
+            throw new ExpenseItemNameIsNullException("Expense item name cannot be null");
+        }
+        if (expenseItem.getName().isEmpty()) {
+            throw new ExpenseItemNameIsEmptyException("Expense item name cannot be empty");
+        }
     }
 
     // Обновить статью
     @PutMapping(path = "/{expenseItemId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ExpenseItem> updateExpenseItem(@PathVariable Long expenseItemId,
             @RequestBody ExpenseItem updatedExpenseItem) {
+        validateExpenseItem(updatedExpenseItem);
         ExpenseItem expenseItem = expenseItemService.updateExpenseItem(expenseItemId, updatedExpenseItem);
         return new ResponseEntity<>(expenseItem, HttpStatus.CREATED);
     }
@@ -63,7 +76,7 @@ public class ExpenseItemController {
     @DeleteMapping(path = "/{expenseItemId}")
     public ResponseEntity<String> deleteExpenseItem(@PathVariable Long expenseItemId) {
         expenseItemService.deleteExpenseItem(expenseItemId);
-        return new ResponseEntity<String>("Resource deleted successfully", HttpStatus.NO_CONTENT);
+        return new ResponseEntity<String>("Resource deleted successfully", HttpStatus.OK);
     }
 
     // Показать расходы по определённой статье

@@ -8,5 +8,6 @@ public class GuitarcollectorsApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(GuitarcollectorsApplication.class, args);
 	}
-
+	// TODO:
+	// логирование исключений
 }

@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.example.guitarcollectors.exception.ExpenseItemHasChargesException;
 import com.example.guitarcollectors.exception.ExpenseItemNotFoundException;
 import com.example.guitarcollectors.model.Charge;
 import com.example.guitarcollectors.model.ExpenseItem;
@@ -18,31 +19,34 @@ import lombok.AllArgsConstructor;
 public class ExpenseItemService {
     private final ExpenseItemsRepository repository;
 
+    // Показать все статьи расходов
     public List<ExpenseItem> getAllExpenseItems() {
         return (List<ExpenseItem>) repository.findAll();
     }
 
+    // Показать статью расходов по id
     public List<Charge> getChargesForExpenseItem(Long expenseItemId) {
         ExpenseItem expenseItem = repository.findById(expenseItemId)
-                .orElseThrow(() -> new EntityNotFoundException("Expense item not found"));
+                .orElseThrow(() -> new ExpenseItemNotFoundException(expenseItemId));
         return expenseItem.getCharges();
     }
 
+    // Показать статью расходов по id
     public ExpenseItem getExpenseItemById(Long expenseItemId) {
         ExpenseItem response = repository.findById(expenseItemId)
                 .orElseThrow(() -> new ExpenseItemNotFoundException(expenseItemId));
         return response;
     }
 
+    // Добавить статью
     public ExpenseItem addNewExpenseItem(ExpenseItem newExpenseItem) {
-        return repository.save(newExpenseItem);
+        ExpenseItem savedExpenseItem = repository.save(newExpenseItem);
+        return savedExpenseItem;
     }
 
     public ExpenseItem updateExpenseItem(Long expenseItemId, ExpenseItem updatedExpenseItem) {
-        Optional<ExpenseItem> response = repository.findById(expenseItemId);
-        if (response.isEmpty()) {
-            throw new IllegalArgumentException();
-        }
+        repository.findById(expenseItemId)
+                .orElseThrow(() -> new ExpenseItemNotFoundException(expenseItemId));
         updatedExpenseItem.setId(expenseItemId);
         return repository.save(updatedExpenseItem);
     }
@@ -51,6 +55,8 @@ public class ExpenseItemService {
         List<Charge> charges = getChargesForExpenseItem(expenseItemId);
         if (charges.isEmpty()) {
             repository.deleteById(expenseItemId);
+        } else {
+            throw new ExpenseItemHasChargesException(expenseItemId);
         }
     }
 
