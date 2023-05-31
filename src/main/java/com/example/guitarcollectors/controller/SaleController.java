@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +19,6 @@ import com.example.guitarcollectors.exception.BadRequestException;
 import com.example.guitarcollectors.model.Sale;
 import com.example.guitarcollectors.service.SaleService;
 
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 @RestController()
@@ -26,6 +26,8 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class SaleController {
     private final SaleService saleService;
+    // TODO:
+    // Прожада со скидкой
 
     // Показать все продажи
     @GetMapping("/")
@@ -45,6 +47,27 @@ public class SaleController {
     public ResponseEntity<Sale> addNewSale(@RequestBody Sale newSale) {
         validate(newSale);
         Sale sale = saleService.addNewSale(newSale);
+        return new ResponseEntity<>(sale, HttpStatus.CREATED);
+    }
+
+    // Продать со скидкой процентом
+    @PostMapping(path = "/percentage-discount/{percentage}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<Sale> addNewSaleDiscountPercentage(@RequestBody Sale newSale,
+            @PathVariable Integer percentage) {
+        validate(newSale);
+        validateDiscount(percentage);
+        Sale sale = saleService.addNewSaleDiscountPercentage(newSale, percentage);
+        return new ResponseEntity<>(sale, HttpStatus.CREATED);
+    }
+
+    // Продать со скидкой абсолютным значением
+    @PostMapping(path = "/absolute-discount/{amount}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<Sale> addNewSaleDiscountAmount(@RequestBody Sale newSale, @PathVariable Integer amount) {
+        validate(newSale);
+        validateDiscount(amount);
+        Sale sale = saleService.addNewSaleDiscountAmount(newSale, amount);
         return new ResponseEntity<>(sale, HttpStatus.CREATED);
     }
 
@@ -79,13 +102,21 @@ public class SaleController {
     // Put Дать скидку процентом
     @PutMapping(path = "/{saleId}/percentage-discount/{percentage}")
     public ResponseEntity<Sale> giveDiscountByPercentage(@PathVariable Long saleId, @PathVariable Integer percentage) {
+        validateDiscount(percentage);
         Sale sale = saleService.giveDiscountByPercentage(saleId, percentage);
         return new ResponseEntity<>(sale, HttpStatus.CREATED);
+    }
+
+    private void validateDiscount(Integer discount) {
+        if (discount < 0) {
+            throw new BadRequestException("Discount can't be less than or equal 0");
+        }
     }
 
     // Put Дать скидку абсолютным значением
     @PutMapping(path = "/{saleId}/absolute-discount/{amount}")
     public ResponseEntity<Sale> giveDiscountOnAmount(@PathVariable Long saleId, @PathVariable Integer amount) {
+        validateDiscount(amount);
         Sale sale = saleService.giveDiscountOnAmount(saleId, amount);
         return new ResponseEntity<>(sale, HttpStatus.CREATED);
     }

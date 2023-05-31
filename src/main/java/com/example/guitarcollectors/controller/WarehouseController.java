@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +21,6 @@ import com.example.guitarcollectors.model.Sale;
 import com.example.guitarcollectors.model.Warehouse;
 import com.example.guitarcollectors.service.WarehouseService;
 
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 @RestController()
@@ -126,8 +126,8 @@ public class WarehouseController {
     }
 
     public void validateMargin(BigDecimal margin) {
-        if (margin.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new BadRequestException("Margine can't be less than 0");
+        if (margin.compareTo(BigDecimal.ZERO) < 0) {
+            throw new BadRequestException("Margine can't be equal or less than 0");
         }
     }
 

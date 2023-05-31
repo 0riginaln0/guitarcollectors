@@ -9,6 +9,5 @@ public class GuitarcollectorsApplication {
 		SpringApplication.run(GuitarcollectorsApplication.class, args);
 	}
 	// TODO:
-	// transactional узнать как работает + может быть ещё повесить на что-то
 	// задебажить убермегаметод
 }

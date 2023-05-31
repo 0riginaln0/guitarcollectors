@@ -22,12 +22,16 @@ public class ExpenseItemService {
         return (List<ExpenseItem>) repository.findAll();
     }
 
-    // Показать статью расходов по id
-    public ExpenseItem getExpenseItemById(Long expenseItemId) {
-        ExpenseItem response = repository.findById(expenseItemId)
+    private ExpenseItem findById(Long id) {
+        return repository.findById(id)
                 .orElseThrow(
                         () -> new MyEntityNotFoundException("expense item with id "
-                                + expenseItemId + " is not found"));
+                                + id + " is not found"));
+    }
+
+    // Показать статью расходов по id
+    public ExpenseItem getExpenseItemById(Long expenseItemId) {
+        ExpenseItem response = findById(expenseItemId);
         return response;
     }
 
@@ -38,8 +42,7 @@ public class ExpenseItemService {
 
     // Обновить статью
     public ExpenseItem updateExpenseItem(Long expenseItemId, ExpenseItem updatedExpenseItem) {
-        repository.findById(expenseItemId)
-                .orElseThrow(() -> new MyEntityNotFoundException("expense item with id " + expenseItemId));
+        findById(expenseItemId);
         updatedExpenseItem.setId(expenseItemId);
         return repository.save(updatedExpenseItem);
     }
@@ -57,8 +60,7 @@ public class ExpenseItemService {
 
     // Показать расходы по определённой статье
     public List<Charge> getChargesForExpenseItem(Long expenseItemId) {
-        ExpenseItem expenseItem = repository.findById(expenseItemId)
-                .orElseThrow(() -> new MyEntityNotFoundException("Can't find expense item with id " + expenseItemId));
+        ExpenseItem expenseItem = findById(expenseItemId);
         return expenseItem.getCharges();
     }
 

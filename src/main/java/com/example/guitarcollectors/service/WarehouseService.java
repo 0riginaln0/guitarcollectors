@@ -36,9 +36,7 @@ public class WarehouseService {
 
     // Показать товар по id
     public Warehouse getProductById(Long productId) {
-        Warehouse response = repository.findById(productId).orElseThrow(
-                () -> new MyEntityNotFoundException("Product with id "
-                        + productId + " is not found"));
+        Warehouse response = findById(productId);
         return response;
     }
 
@@ -49,9 +47,7 @@ public class WarehouseService {
 
     // Обновить товар
     public Warehouse updateProduct(Long productId, Warehouse updatedProduct) {
-        repository.findById(productId).orElseThrow(
-                () -> new MyEntityNotFoundException("Product with id "
-                        + productId + " is not found"));
+        findById(productId);
         updatedProduct.setId(productId);
         return repository.save(updatedProduct);
     }
@@ -148,11 +144,15 @@ public class WarehouseService {
         return outputList;
     }
 
-    // Показать продажи определённого товара
-    public List<Sale> getSalesForProductId(Long productId) {
-        Warehouse products = repository.findById(productId).orElseThrow(
+    private Warehouse findById(Long productId) {
+        return repository.findById(productId).orElseThrow(
                 () -> new MyEntityNotFoundException("Product with id "
                         + productId + " is not found"));
+    }
+
+    // Показать продажи определённого товара
+    public List<Sale> getSalesForProductId(Long productId) {
+        Warehouse products = findById(productId);
         return products.getSales();
     }
 

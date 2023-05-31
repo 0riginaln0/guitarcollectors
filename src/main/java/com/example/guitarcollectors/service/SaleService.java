@@ -25,10 +25,14 @@ public class SaleService {
         return (List<Sale>) repository.findAll();
     }
 
+    private Sale findById(Long saleId) {
+        return repository.findById(saleId)
+                .orElseThrow(() -> new MyEntityNotFoundException("Sale with id " + saleId + " is not found"));
+    }
+
     // Показать продажу по id
     public Sale getSaleItemById(Long saleId) {
-        Sale response = repository.findById(saleId)
-                .orElseThrow(() -> new MyEntityNotFoundException("Sale with id " + saleId + " is not found"));
+        Sale response = findById(saleId);
         return response;
     }
 
@@ -51,25 +55,34 @@ public class SaleService {
         return repository.save(newSale);
     }
 
+    // Продать со скидкой процентом
+    public Sale addNewSaleDiscountPercentage(Sale newSale, Integer percentage) {
+        Sale discountedSale = addNewSale(newSale);
+        return giveDiscountByPercentage(discountedSale.getId(), percentage);
+    }
+
+    // Продать со скидкой абсолютным значением
+    public Sale addNewSaleDiscountAmount(Sale newSale, Integer amount) {
+        Sale discountedSale = addNewSale(newSale);
+        return giveDiscountOnAmount(discountedSale.getId(), amount);
+    }
+
     // Обновить продажу
     public Sale updateSale(Long saleId, Sale updatedSale) {
-        repository.findById(saleId)
-                .orElseThrow(() -> new MyEntityNotFoundException("Sale with id " + saleId + " is not found"));
+        findById(saleId);
         updatedSale.setId(saleId);
         return repository.save(updatedSale);
     }
 
     // Удалить продажу
     public void deleteSale(Long saleId) {
-        repository.findById(saleId)
-                .orElseThrow(() -> new MyEntityNotFoundException("Sale with id " + saleId + " is not found"));
+        findById(saleId);
         repository.deleteById(saleId);
     }
 
     // Put Дать скидку процентом
     public Sale giveDiscountByPercentage(Long saleId, Integer percentage) {
-        Sale response = repository.findById(saleId)
-                .orElseThrow(() -> new MyEntityNotFoundException("Sale with id " + saleId + " is not found"));
+        Sale response = findById(saleId);
         Sale discountSale = response;
 
         BigDecimal discount = BigDecimal.valueOf(percentage).divide(BigDecimal.valueOf(100));
@@ -83,8 +96,7 @@ public class SaleService {
 
     // Put Дать скидку абсолютным значением
     public Sale giveDiscountOnAmount(Long saleId, Integer amount) {
-        Sale response = repository.findById(saleId)
-                .orElseThrow(() -> new MyEntityNotFoundException("Sale with id " + saleId + " is not found"));
+        Sale response = findById(saleId);
         Sale discountSale = response;
 
         BigDecimal currentPrice = discountSale.getAmount();
