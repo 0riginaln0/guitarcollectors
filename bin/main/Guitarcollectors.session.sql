@@ -12,11 +12,11 @@ VALUES ('Rent'),
     ('Repurchase'),
     ('Shipping');
 INSERT INTO warehouse (amount, name, quantity)
-VALUES (60000, 'Bacchus Vintage Stratocaster', 1),
+VALUES (60000, 'Bacchus Vintage Stratocaster', 0),
     (
         53000,
         'Greco Boogie BG-1100T Supreme Sound Buster',
-        1
+        0
     ),
     (
         49000,

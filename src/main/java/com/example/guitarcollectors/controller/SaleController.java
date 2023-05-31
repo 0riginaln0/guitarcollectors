@@ -26,8 +26,6 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class SaleController {
     private final SaleService saleService;
-    // TODO:
-    // Прожада со скидкой
 
     // Показать все продажи
     @GetMapping("/")
@@ -71,18 +69,6 @@ public class SaleController {
         return new ResponseEntity<>(sale, HttpStatus.CREATED);
     }
 
-    public void validate(Sale newSale) {
-        if (newSale.getQuantity() == null) {
-            throw new BadRequestException("Sale's quantity cannot be null");
-        }
-        if (newSale.getWarehouse().getId() == null) {
-            throw new BadRequestException("Sale's product id cannot be null");
-        }
-        if (newSale.getQuantity() < 1) {
-            throw new BadRequestException("Sale's quantity cannot less than one");
-        }
-    }
-
     // Обновить продажу
     @PutMapping(path = "/{saleId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Sale> updateSale(@PathVariable Long saleId,
@@ -96,7 +82,7 @@ public class SaleController {
     @DeleteMapping(path = "/{saleId}")
     public ResponseEntity<String> deleteSale(@PathVariable Long saleId) {
         saleService.deleteSale(saleId);
-        return new ResponseEntity<>("Resource deleted successfully", HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>("Resource deleted successfully", HttpStatus.OK);
     }
 
     // Put Дать скидку процентом
@@ -107,17 +93,29 @@ public class SaleController {
         return new ResponseEntity<>(sale, HttpStatus.CREATED);
     }
 
-    private void validateDiscount(Integer discount) {
-        if (discount < 0) {
-            throw new BadRequestException("Discount can't be less than or equal 0");
-        }
-    }
-
     // Put Дать скидку абсолютным значением
     @PutMapping(path = "/{saleId}/absolute-discount/{amount}")
     public ResponseEntity<Sale> giveDiscountOnAmount(@PathVariable Long saleId, @PathVariable Integer amount) {
         validateDiscount(amount);
         Sale sale = saleService.giveDiscountOnAmount(saleId, amount);
         return new ResponseEntity<>(sale, HttpStatus.CREATED);
+    }
+
+    private void validateDiscount(Integer discount) {
+        if (discount < 0) {
+            throw new BadRequestException("Discount can't be less than or equal 0");
+        }
+    }
+
+    public void validate(Sale newSale) {
+        if (newSale.getQuantity() == null) {
+            throw new BadRequestException("Sale's quantity cannot be null");
+        }
+        if (newSale.getWarehouse().getId() == null) {
+            throw new BadRequestException("Sale's product id cannot be null");
+        }
+        if (newSale.getQuantity() < 1) {
+            throw new BadRequestException("Sale's quantity cannot less than one");
+        }
     }
 }

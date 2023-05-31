@@ -49,18 +49,6 @@ public class ChargeController {
         return new ResponseEntity<>(charge, HttpStatus.CREATED);
     }
 
-    public void validate(Charge newCharge) {
-        if (newCharge.getAmount() == null) {
-            throw new BadRequestException("Charge's amount cannot be null");
-        }
-        if (newCharge.getExpenseItem().getId() == null) {
-            throw new BadRequestException("Charge's expense item id cannot be null");
-        }
-        if (newCharge.getAmount().compareTo(BigDecimal.ZERO) < 0) {
-            throw new BadRequestException("Charge's amount cannot be less than zero");
-        }
-    }
-
     // Обновить расход
     @PutMapping(path = "/{chargeId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Charge> updateCharge(@PathVariable Long chargeId,
@@ -74,6 +62,18 @@ public class ChargeController {
     @DeleteMapping(path = "/{chargeId}")
     public ResponseEntity<String> deleteCharge(@PathVariable Long chargeId) {
         chargeService.deleteCharge(chargeId);
-        return new ResponseEntity<>("Resource deleted successfully", HttpStatus.NO_CONTENT);
+        return new ResponseEntity<String>("Resource deleted successfully", HttpStatus.OK);
+    }
+
+    public void validate(Charge newCharge) {
+        if (newCharge.getAmount() == null) {
+            throw new BadRequestException("Charge's amount cannot be null");
+        }
+        if (newCharge.getExpenseItem().getId() == null) {
+            throw new BadRequestException("Charge's expense item id cannot be null");
+        }
+        if (newCharge.getAmount().compareTo(BigDecimal.ZERO) < 0) {
+            throw new BadRequestException("Charge's amount cannot be less than zero");
+        }
     }
 }

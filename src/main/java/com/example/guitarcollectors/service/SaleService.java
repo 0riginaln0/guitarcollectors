@@ -71,7 +71,7 @@ public class SaleService {
     public Sale updateSale(Long saleId, Sale updatedSale) {
         findById(saleId);
         updatedSale.setId(saleId);
-        return repository.save(updatedSale);
+        return addNewSale(updatedSale);
     }
 
     // Удалить продажу

@@ -62,10 +62,10 @@ public class WarehouseController {
     @DeleteMapping(path = "/{productId}")
     public ResponseEntity<String> deleteProduct(@PathVariable Long productId) {
         warehouseService.deleteProduct(productId);
-        return new ResponseEntity<>("Product deleted successfully", HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>("Product deleted successfully", HttpStatus.OK);
     }
 
-    // Показать все товары, которые есть в наличии
+    // Показать товары в наличии
     @GetMapping("/instock")
     public ResponseEntity<List<Warehouse>> getAllInStock() {
         return new ResponseEntity<>(warehouseService.getAllInStock(), HttpStatus.OK);
@@ -109,7 +109,7 @@ public class WarehouseController {
 
     // Показать продажи определённого товара
     @GetMapping("/sales/{productId}")
-    public ResponseEntity<List<Sale>> getSalesForProductId(Long productId) {
+    public ResponseEntity<List<Sale>> getSalesForProductId(@PathVariable Long productId) {
         return new ResponseEntity<>(warehouseService.getSalesForProductId(productId), HttpStatus.OK);
     }
 
@@ -127,7 +127,7 @@ public class WarehouseController {
 
     public void validateMargin(BigDecimal margin) {
         if (margin.compareTo(BigDecimal.ZERO) < 0) {
-            throw new BadRequestException("Margine can't be equal or less than 0");
+            throw new BadRequestException("Margine can't be less than 0");
         }
     }
 

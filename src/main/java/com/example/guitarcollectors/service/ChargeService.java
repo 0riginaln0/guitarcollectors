@@ -42,7 +42,8 @@ public class ChargeService {
         repository.findById(chargeId)
                 .orElseThrow(() -> new MyEntityNotFoundException("Charge with id " + chargeId + " is not found"));
         updatedCharge.setId(chargeId);
-        return repository.save(updatedCharge);
+
+        return addNewCharge(updatedCharge);
     }
 
     // Удалить расход

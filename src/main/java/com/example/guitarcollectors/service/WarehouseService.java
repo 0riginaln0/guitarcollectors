@@ -63,7 +63,7 @@ public class WarehouseService {
         }
     }
 
-    // Показать все товары, которые есть в наличии
+    // Показать товары в наличии
     public List<Warehouse> getAllInStock() {
         List<Warehouse> list = getAllProducts();
         List<Warehouse> outputList = new ArrayList<Warehouse>();
@@ -162,9 +162,10 @@ public class WarehouseService {
         ExpenseItem repurchaseExpenseItem = expenseItemService.getExpenseItemById((long) 9);
         Charge repurchaseCharge = new Charge(newProduct.getAmount(), LocalDateTime.now(), repurchaseExpenseItem);
         chargeService.addNewCharge(repurchaseCharge);
+
         BigDecimal marginAmount = newProduct.getAmount().multiply(margin).divide(new BigDecimal(100));
         BigDecimal sellingPrice = newProduct.getAmount().add(marginAmount);
-        sellingPrice = sellingPrice.divide(new BigDecimal(1000), 2, RoundingMode.UP).multiply(new BigDecimal(1000));
+        sellingPrice = sellingPrice.divide(new BigDecimal(1000), 0, RoundingMode.UP).multiply(new BigDecimal(1000));
 
         newProduct.setAmount(sellingPrice);
         return repository.save(newProduct);
