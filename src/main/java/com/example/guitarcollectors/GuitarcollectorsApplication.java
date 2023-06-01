@@ -8,4 +8,7 @@ public class GuitarcollectorsApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(GuitarcollectorsApplication.class, args);
 	}
+
+	// TODO:
+	// Добавить stacktrace в выводе информации об исключении
 }
