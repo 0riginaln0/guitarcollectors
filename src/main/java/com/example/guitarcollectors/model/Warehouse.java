@@ -47,5 +47,4 @@ public class Warehouse {
         this.quantity = quantity;
         this.amount = amount;
     }
-
 }

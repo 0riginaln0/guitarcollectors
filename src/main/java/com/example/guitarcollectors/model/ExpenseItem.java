@@ -38,5 +38,4 @@ public class ExpenseItem {
     public ExpenseItem(String name) {
         this.name = name;
     }
-
 }

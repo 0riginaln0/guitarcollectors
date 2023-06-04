@@ -49,5 +49,4 @@ public class Charge {
         this.chargeDate = chargeDate;
         this.expenseItem = expenseItem;
     }
-
 }

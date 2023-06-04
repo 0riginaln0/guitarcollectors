@@ -54,5 +54,4 @@ public class Sale {
         this.saleDate = saleDate;
         this.warehouse = warehouse;
     }
-
 }
