@@ -17,8 +17,11 @@ public class ControllerLayerAdvice {
     @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     String badRequestHandler(BadRequestException ex) {
-        log.error("\n" + ex.getMessage() + "\n");
-        ex.printStackTrace();
+        log.error("\n" + ex.getMessage()
+                + "\n    file name: " + ex.getStackTrace()[0].getFileName()
+                + "\n   class name: " + ex.getStackTrace()[0].getClassName()
+                + "\n  method name: " + ex.getStackTrace()[0].getMethodName()
+                + "\n  line number: " + ex.getStackTrace()[0].getLineNumber());
         return ex.getMessage();
     }
 }

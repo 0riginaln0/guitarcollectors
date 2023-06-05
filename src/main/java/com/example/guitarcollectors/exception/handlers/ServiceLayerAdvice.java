@@ -18,8 +18,11 @@ public class ServiceLayerAdvice {
     @ExceptionHandler(ForbiddenRequestException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     String forbiddenRequestHandler(ForbiddenRequestException ex) {
-        log.error("\n" + ex.getMessage() + "\n");
-        ex.printStackTrace();
+        log.error("\n" + ex.getMessage()
+                + "\n    file name: " + ex.getStackTrace()[0].getFileName()
+                + "\n   class name: " + ex.getStackTrace()[0].getClassName()
+                + "\n  method name: " + ex.getStackTrace()[0].getMethodName()
+                + "\n  line number: " + ex.getStackTrace()[0].getLineNumber());
         return ex.getMessage();
     }
 
@@ -27,8 +30,11 @@ public class ServiceLayerAdvice {
     @ExceptionHandler(MyEntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     String myEntityNotFoundHandler(MyEntityNotFoundException ex) {
-        log.error("\n" + ex.getMessage() + "\n");
-        ex.printStackTrace();
+        log.error("\n" + ex.getMessage()
+                + "\n    file name: " + ex.getStackTrace()[0].getFileName()
+                + "\n   class name: " + ex.getStackTrace()[0].getClassName()
+                + "\n  method name: " + ex.getStackTrace()[0].getMethodName()
+                + "\n  line number: " + ex.getStackTrace()[0].getLineNumber());
         return ex.getMessage();
     }
 }
