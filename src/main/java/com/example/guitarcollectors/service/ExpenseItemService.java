@@ -5,11 +5,11 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.example.guitarcollectors.exception.ForbiddenRequestException;
-import com.example.guitarcollectors.exception.MyEntityNotFoundException;
 import com.example.guitarcollectors.model.Charge;
 import com.example.guitarcollectors.model.ExpenseItem;
 import com.example.guitarcollectors.repository.ExpenseItemsRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -22,16 +22,12 @@ public class ExpenseItemService {
         return (List<ExpenseItem>) repository.findAll();
     }
 
-    private ExpenseItem findById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(
-                        () -> new MyEntityNotFoundException("expense item with id "
-                                + id + " is not found"));
-    }
-
     // Показать статью расходов по id
     public ExpenseItem getExpenseItemById(Long expenseItemId) {
-        ExpenseItem response = findById(expenseItemId);
+        ExpenseItem response = repository.findById(expenseItemId)
+                .orElseThrow(
+                        () -> new EntityNotFoundException("expense item with id "
+                                + expenseItemId + " is not found"));
         return response;
     }
 
@@ -42,7 +38,10 @@ public class ExpenseItemService {
 
     // Обновить статью
     public ExpenseItem updateExpenseItem(Long expenseItemId, ExpenseItem updatedExpenseItem) {
-        findById(expenseItemId);
+        repository.findById(expenseItemId)
+                .orElseThrow(
+                        () -> new EntityNotFoundException("expense item with id "
+                                + expenseItemId + " is not found"));
         updatedExpenseItem.setId(expenseItemId);
         return repository.save(updatedExpenseItem);
     }
@@ -60,7 +59,10 @@ public class ExpenseItemService {
 
     // Показать расходы по определённой статье
     public List<Charge> getChargesForExpenseItem(Long expenseItemId) {
-        ExpenseItem expenseItem = findById(expenseItemId);
+        ExpenseItem expenseItem = repository.findById(expenseItemId)
+                .orElseThrow(
+                        () -> new EntityNotFoundException("expense item with id "
+                                + expenseItemId + " is not found"));
         return expenseItem.getCharges();
     }
 

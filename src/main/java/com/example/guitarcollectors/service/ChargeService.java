@@ -5,10 +5,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.example.guitarcollectors.exception.MyEntityNotFoundException;
 import com.example.guitarcollectors.model.Charge;
 import com.example.guitarcollectors.repository.ChargeRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -25,7 +25,7 @@ public class ChargeService {
     // Показать расход по id
     public Charge getChargeItemById(Long chargeId) {
         Charge response = repository.findById(chargeId)
-                .orElseThrow(() -> new MyEntityNotFoundException("Charge with id " + chargeId + " is not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Charge with id " + chargeId + " is not found"));
         return response;
     }
 
@@ -40,7 +40,7 @@ public class ChargeService {
     // Обновить расход
     public Charge updateCharge(Long chargeId, Charge updatedCharge) {
         repository.findById(chargeId)
-                .orElseThrow(() -> new MyEntityNotFoundException("Charge with id " + chargeId + " is not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Charge with id " + chargeId + " is not found"));
         updatedCharge.setId(chargeId);
 
         return addNewCharge(updatedCharge);
@@ -49,7 +49,7 @@ public class ChargeService {
     // Удалить расход
     public void deleteCharge(Long chargeId) {
         repository.findById(chargeId)
-                .orElseThrow(() -> new MyEntityNotFoundException("Charge with id " + chargeId + " is not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Charge with id " + chargeId + " is not found"));
         repository.deleteById(chargeId);
     }
 

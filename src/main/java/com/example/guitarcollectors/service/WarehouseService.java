@@ -11,13 +11,13 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.example.guitarcollectors.exception.ForbiddenRequestException;
-import com.example.guitarcollectors.exception.MyEntityNotFoundException;
 import com.example.guitarcollectors.model.Charge;
 import com.example.guitarcollectors.model.ExpenseItem;
 import com.example.guitarcollectors.model.Sale;
 import com.example.guitarcollectors.model.Warehouse;
 import com.example.guitarcollectors.repository.WarehouseRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -36,7 +36,9 @@ public class WarehouseService {
 
     // Показать товар по id
     public Warehouse getProductById(Long productId) {
-        Warehouse response = findById(productId);
+        Warehouse response = repository.findById(productId).orElseThrow(
+                () -> new EntityNotFoundException("Product with id "
+                        + productId + " is not found"));
         return response;
     }
 
@@ -47,7 +49,9 @@ public class WarehouseService {
 
     // Обновить товар
     public Warehouse updateProduct(Long productId, Warehouse updatedProduct) {
-        findById(productId);
+        repository.findById(productId).orElseThrow(
+                () -> new EntityNotFoundException("Product with id "
+                        + productId + " is not found"));
         updatedProduct.setId(productId);
         return repository.save(updatedProduct);
     }
@@ -144,15 +148,11 @@ public class WarehouseService {
         return outputList;
     }
 
-    private Warehouse findById(Long productId) {
-        return repository.findById(productId).orElseThrow(
-                () -> new MyEntityNotFoundException("Product with id "
-                        + productId + " is not found"));
-    }
-
     // Показать продажи определённого товара
     public List<Sale> getSalesForProductId(Long productId) {
-        Warehouse products = findById(productId);
+        Warehouse products = repository.findById(productId).orElseThrow(
+                () -> new EntityNotFoundException("Product with id "
+                        + productId + " is not found"));
         return products.getSales();
     }
 
