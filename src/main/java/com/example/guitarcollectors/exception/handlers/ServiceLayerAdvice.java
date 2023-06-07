@@ -1,6 +1,7 @@
 package com.example.guitarcollectors.exception.handlers;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -30,6 +31,18 @@ public class ServiceLayerAdvice {
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     String myEntityNotFoundHandler(EntityNotFoundException ex) {
+        log.error("\n" + ex.getMessage()
+                + "\n    file name: " + ex.getStackTrace()[0].getFileName()
+                + "\n   class name: " + ex.getStackTrace()[0].getClassName()
+                + "\n  method name: " + ex.getStackTrace()[0].getMethodName()
+                + "\n  line number: " + ex.getStackTrace()[0].getLineNumber());
+        return ex.getMessage();
+    }
+
+    @ResponseBody
+    @ExceptionHandler(UsernameNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    String myEntityNotFoundHandler(UsernameNotFoundException ex) {
         log.error("\n" + ex.getMessage()
                 + "\n    file name: " + ex.getStackTrace()[0].getFileName()
                 + "\n   class name: " + ex.getStackTrace()[0].getClassName()
