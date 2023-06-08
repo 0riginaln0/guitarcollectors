@@ -1,6 +1,5 @@
 package com.example.guitarcollectors.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,14 +11,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
-import com.example.guitarcollectors.security.jwt.JwtTokenProvider;
-
 @Configuration
 @EnableWebSecurity
 public class SpringSecurityConfig {
-
-        @Autowired
-        private JwtTokenProvider jwtTokenProvider;
 
         @Bean
         public InMemoryUserDetailsManager userDetailsManager() {
