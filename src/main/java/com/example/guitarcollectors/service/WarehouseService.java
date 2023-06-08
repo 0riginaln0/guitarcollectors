@@ -29,6 +29,9 @@ public class WarehouseService {
     private final Comparator<Warehouse> amountAscendingComparator;
     private final Comparator<Warehouse> amountDescendingComparator;
 
+    // TODO:
+    // Показать товары в наличии через query в repository
+
     // Показать все товары
     public List<Warehouse> getAllProducts() {
         return (List<Warehouse>) repository.findAll();

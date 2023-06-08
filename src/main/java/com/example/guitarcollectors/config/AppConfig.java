@@ -13,6 +13,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.example.guitarcollectors.model.Charge;
 import com.example.guitarcollectors.model.ExpenseItem;
@@ -21,10 +24,17 @@ import com.example.guitarcollectors.model.Warehouse;
 import com.example.guitarcollectors.repository.ChargeRepository;
 import com.example.guitarcollectors.repository.ExpenseItemsRepository;
 import com.example.guitarcollectors.repository.SaleRepository;
+import com.example.guitarcollectors.repository.UserRepository;
 import com.example.guitarcollectors.repository.WarehouseRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Configuration
+@RequiredArgsConstructor
 public class AppConfig {
+
+    private final UserRepository userRepository;
+
     @Bean
     public Comparator<Warehouse> amountAscendingComparator() {
         return new Comparator<Warehouse>() {
@@ -41,6 +51,12 @@ public class AppConfig {
                 return w2.getAmount().compareTo(w1.getAmount());
             }
         };
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return username -> userRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
     @Bean

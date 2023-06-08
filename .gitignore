@@ -18,3 +18,5 @@ gradle-app.setting
 .classpath
 
 bin/
+bin/main/
+bin/default/

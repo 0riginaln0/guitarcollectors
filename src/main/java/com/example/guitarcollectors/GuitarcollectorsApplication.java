@@ -9,3 +9,4 @@ public class GuitarcollectorsApplication {
 		SpringApplication.run(GuitarcollectorsApplication.class, args);
 	}
 }
+// https://youtu.be/KxqlJblhzfI?t=5691 1:34:51
