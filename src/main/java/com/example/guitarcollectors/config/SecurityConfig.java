@@ -2,6 +2,7 @@ package com.example.guitarcollectors.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -25,8 +26,12 @@ public class SecurityConfig {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
-                .requestMatchers("")
+                .requestMatchers("/api/auth/**")
                 .permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/**")
+                .permitAll()
+                .requestMatchers("api/expense-items/**", "api/charges/**", "api/warehouse/**", "api/sales/**")
+                .hasRole("MANAGER")
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -35,7 +40,6 @@ public class SecurityConfig {
                 .and()
                 .authenticationProvider(AuthenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 
