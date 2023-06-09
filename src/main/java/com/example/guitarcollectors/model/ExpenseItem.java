@@ -10,15 +10,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
 // Таблица статей расходов
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @ToString
 @Table(name = "expense_items")
