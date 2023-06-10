@@ -28,10 +28,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .requestMatchers("/api/auth/**")
                 .permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/**")
+                .requestMatchers(HttpMethod.GET, "api/warehouse/**", "api/expense-items/**", "api/sales/**",
+                        "api/charges/**")
                 .permitAll()
-                .requestMatchers("api/expense-items/**", "api/charges/**", "api/warehouse/**", "api/sales/**")
-                .hasRole("MANAGER")
+                .requestMatchers("api/warehouse/**", "api/expense-items/**", "api/sales/**",
+                        "api/charges/**")
+                .hasAuthority("MANAGER")
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -42,5 +44,4 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
 }
