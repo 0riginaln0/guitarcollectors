@@ -71,6 +71,7 @@ public class SaleController {
 
     // Обновить продажу
     @PutMapping(path = "/{saleId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
     public ResponseEntity<Sale> updateSale(@PathVariable Long saleId,
             @RequestBody Sale updatedSale) {
         Sale sale = saleService.updateSale(saleId, updatedSale);

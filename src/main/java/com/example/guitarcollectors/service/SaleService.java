@@ -77,34 +77,67 @@ public class SaleService {
         } else if (updatedSale.getAmount().compareTo(BigDecimal.ZERO) < 0) {
             throw new BadRequestException("Product's amount cannot be less than zero");
         }
-        if (updatedSale.getWarehouse() == null) {
-            updatedSale.setWarehouse(oldSale.getWarehouse());
-        }
         // проверка на saledate
         if (updatedSale.getSaleDate() == null) {
             updatedSale.setSaleDate(oldSale.getSaleDate());
         }
+        if (updatedSale.getWarehouse() == null || updatedSale.getWarehouse().equals(oldSale.getWarehouse())) {
+            updatedSale.setWarehouse(oldSale.getWarehouse());
+            // Проверка на quantity при условии что warehouse id (товар) тот же или не
+            // указан (не изменён)
+            if (updatedSale.getQuantity() == null || updatedSale.getQuantity().equals(oldSale.getQuantity())) {
+                updatedSale.setQuantity(oldSale.getQuantity());
+            } else {
+                if (updatedSale.getQuantity() < 1) {
+                    throw new ForbiddenRequestException("Quantity can't be less than one");
+                }
+                Integer difference = updatedSale.getQuantity() - oldSale.getQuantity();
+                Warehouse updatedWarehouse = oldSale.getWarehouse();
+                // Если нужно обновить на меньшее количество товара
+                if (difference < 0) {
+                    updatedWarehouse.setQuantity(updatedWarehouse.getQuantity() - difference);
+                    warehouse.updateProduct(updatedWarehouse.getId(), updatedWarehouse);
+                    // Если нужно обновить на большее количество товара
+                    // Если (доп. количество товара к заказу не больше, чем есть на складе)
+                } else if (difference <= updatedWarehouse.getQuantity()) {
+                    updatedWarehouse.setQuantity(updatedWarehouse.getQuantity() - difference);
+                    warehouse.updateProduct(updatedWarehouse.getId(), updatedWarehouse);
+                } else {
+                    throw new ForbiddenRequestException(
+                            "Not enough product on warehouse. Required quantity: " + difference +
+                                    ". Quantity in warehouse: " + updatedWarehouse.getQuantity());
+                }
+            }
+            // Если продали не тот товар, и заменяем его на другой
+        } else if (!updatedSale.getWarehouse().equals(oldSale.getWarehouse())) {
+            // Возвращаем неправильно проданный товар на склад
+            Warehouse oldProduct = oldSale.getWarehouse();
+            Integer quantityToAdd = oldSale.getQuantity();
+            oldProduct.setQuantity(oldProduct.getQuantity() + quantityToAdd);
+            warehouse.updateProduct(oldProduct.getId(), oldProduct);
 
-        // Проверка на quantity
-        if (updatedSale.getQuantity() == null || updatedSale.getQuantity().equals(oldSale.getQuantity())) {
-            updatedSale.setQuantity(oldSale.getQuantity());
-        } else {
+            // Проверка валидности запрашиваемого количества товара
+            if (updatedSale.getQuantity() == null) {
+                updatedSale.setQuantity(1);
+            }
             if (updatedSale.getQuantity() < 1) {
                 throw new ForbiddenRequestException("Quantity can't be less than one");
             }
-            Integer difference = updatedSale.getQuantity() - oldSale.getQuantity();
-            Warehouse updatedWarehouse = oldSale.getWarehouse();
-            if (difference < 0) {
-                updatedWarehouse.setQuantity(updatedWarehouse.getQuantity() - difference);
-                warehouse.updateProduct(updatedWarehouse.getId(), updatedWarehouse);
-            } else if (difference <= updatedWarehouse.getQuantity()) {
-                updatedWarehouse.setQuantity(updatedWarehouse.getQuantity() - difference);
-                warehouse.updateProduct(updatedWarehouse.getId(), updatedWarehouse);
-            } else {
+            Warehouse newProduct = warehouse.getProductById(updatedSale.getWarehouse().getId());
+            // Проверка на наличие нового товара на складе в нужных размерах
+            if (newProduct.getQuantity() < updatedSale.getQuantity()) {
                 throw new ForbiddenRequestException(
-                        "Not enough product on warehouse. Required quantity: " + difference +
-                                ". Quantity in warehouse: " + updatedWarehouse.getQuantity());
+                        "Not enough product in warehouse. Required quantity: " + updatedSale.getQuantity() +
+                                ". Quantity in warehouse: " + newProduct.getQuantity());
+            } else {
+                newProduct.setQuantity(newProduct.getQuantity() - updatedSale.getQuantity());
+                warehouse.updateProduct(newProduct.getId(), newProduct);
+                // Меняем цену старого товара на цену нового
+                updatedSale.setAmount(newProduct.getAmount());
             }
+        } else {
+            throw new ForbiddenRequestException(
+                    "How df u managed to do this?");
         }
 
         updatedSale.setId(saleId);
