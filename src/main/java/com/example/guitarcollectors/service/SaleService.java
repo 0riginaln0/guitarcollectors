@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.example.guitarcollectors.exception.BadRequestException;
 import com.example.guitarcollectors.exception.ForbiddenRequestException;
 import com.example.guitarcollectors.model.Sale;
 import com.example.guitarcollectors.model.Warehouse;
@@ -62,13 +63,52 @@ public class SaleService {
         Sale discountedSale = addNewSale(newSale);
         return giveDiscountOnAmount(discountedSale.getId(), amount);
     }
+    // TODO:
+    // Сделать проверку что в скидке на абсолютное значение, сумма не станет
+    // отрицательной
 
     // Обновить продажу
     public Sale updateSale(Long saleId, Sale updatedSale) {
-        repository.findById(saleId)
+        Sale oldSale = repository.findById(saleId)
                 .orElseThrow(() -> new EntityNotFoundException("Sale with id " + saleId + " is not found"));
+        // Проверка на amount
+        if (updatedSale.getAmount() == null) {
+            updatedSale.setAmount(oldSale.getAmount());
+        } else if (updatedSale.getAmount().compareTo(BigDecimal.ZERO) < 0) {
+            throw new BadRequestException("Product's amount cannot be less than zero");
+        }
+        if (updatedSale.getWarehouse() == null) {
+            updatedSale.setWarehouse(oldSale.getWarehouse());
+        }
+        // проверка на saledate
+        if (updatedSale.getSaleDate() == null) {
+            updatedSale.setSaleDate(oldSale.getSaleDate());
+        }
+
+        // Проверка на quantity
+        if (updatedSale.getQuantity() == null || updatedSale.getQuantity().equals(oldSale.getQuantity())) {
+            updatedSale.setQuantity(oldSale.getQuantity());
+        } else {
+            if (updatedSale.getQuantity() < 1) {
+                throw new ForbiddenRequestException("Quantity can't be less than one");
+            }
+            Integer difference = updatedSale.getQuantity() - oldSale.getQuantity();
+            Warehouse updatedWarehouse = oldSale.getWarehouse();
+            if (difference < 0) {
+                updatedWarehouse.setQuantity(updatedWarehouse.getQuantity() - difference);
+                warehouse.updateProduct(updatedWarehouse.getId(), updatedWarehouse);
+            } else if (difference <= updatedWarehouse.getQuantity()) {
+                updatedWarehouse.setQuantity(updatedWarehouse.getQuantity() - difference);
+                warehouse.updateProduct(updatedWarehouse.getId(), updatedWarehouse);
+            } else {
+                throw new ForbiddenRequestException(
+                        "Not enough product on warehouse. Required quantity: " + difference +
+                                ". Quantity in warehouse: " + updatedWarehouse.getQuantity());
+            }
+        }
+
         updatedSale.setId(saleId);
-        return addNewSale(updatedSale);
+        return repository.save(updatedSale);
     }
 
     // Удалить продажу

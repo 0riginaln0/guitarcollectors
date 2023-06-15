@@ -53,7 +53,6 @@ public class ChargeController {
     @PutMapping(path = "/{chargeId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Charge> updateCharge(@PathVariable Long chargeId,
             @RequestBody Charge updatedCharge) {
-        validate(updatedCharge);
         Charge charge = chargeService.updateCharge(chargeId, updatedCharge);
         return new ResponseEntity<>(charge, HttpStatus.CREATED);
     }

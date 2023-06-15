@@ -29,9 +29,6 @@ public class WarehouseService {
     private final Comparator<Warehouse> amountAscendingComparator;
     private final Comparator<Warehouse> amountDescendingComparator;
 
-    // TODO:
-    // Показать товары в наличии через query в repository
-
     // Показать все товары
     public List<Warehouse> getAllProducts() {
         return (List<Warehouse>) repository.findAll();
@@ -52,9 +49,18 @@ public class WarehouseService {
 
     // Обновить товар
     public Warehouse updateProduct(Long productId, Warehouse updatedProduct) {
-        repository.findById(productId).orElseThrow(
+        Warehouse oldProduct = repository.findById(productId).orElseThrow(
                 () -> new EntityNotFoundException("Product with id "
                         + productId + " is not found"));
+        if (updatedProduct.getName() == null) {
+            updatedProduct.setName(oldProduct.getName());
+        }
+        if (updatedProduct.getQuantity() == null) {
+            updatedProduct.setQuantity(oldProduct.getQuantity());
+        }
+        if (updatedProduct.getAmount() == null) {
+            updatedProduct.setAmount(oldProduct.getAmount());
+        }
         updatedProduct.setId(productId);
         return repository.save(updatedProduct);
     }

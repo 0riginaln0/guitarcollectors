@@ -53,7 +53,6 @@ public class WarehouseController {
     @PutMapping(path = "/{productId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Warehouse> updateExpenseItem(@PathVariable Long productId,
             @RequestBody Warehouse updatedProduct) {
-        validateProduct(updatedProduct);
         Warehouse product = warehouseService.updateProduct(productId, updatedProduct);
         return new ResponseEntity<>(product, HttpStatus.CREATED);
     }

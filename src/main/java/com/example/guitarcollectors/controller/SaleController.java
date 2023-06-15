@@ -73,7 +73,6 @@ public class SaleController {
     @PutMapping(path = "/{saleId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Sale> updateSale(@PathVariable Long saleId,
             @RequestBody Sale updatedSale) {
-        validate(updatedSale);
         Sale sale = saleService.updateSale(saleId, updatedSale);
         return new ResponseEntity<>(sale, HttpStatus.CREATED);
     }

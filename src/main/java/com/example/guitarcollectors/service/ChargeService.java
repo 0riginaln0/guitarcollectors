@@ -39,11 +39,19 @@ public class ChargeService {
 
     // Обновить расход
     public Charge updateCharge(Long chargeId, Charge updatedCharge) {
-        repository.findById(chargeId)
+        Charge oldCharge = repository.findById(chargeId)
                 .orElseThrow(() -> new EntityNotFoundException("Charge with id " + chargeId + " is not found"));
+        if (updatedCharge.getAmount() == null) {
+            updatedCharge.setAmount(oldCharge.getAmount());
+        }
+        if (updatedCharge.getChargeDate() == null) {
+            updatedCharge.setChargeDate(oldCharge.getChargeDate());
+        }
+        if (updatedCharge.getExpenseItem() == null) {
+            updatedCharge.setExpenseItem(oldCharge.getExpenseItem());
+        }
         updatedCharge.setId(chargeId);
-
-        return addNewCharge(updatedCharge);
+        return repository.save(updatedCharge);
     }
 
     // Удалить расход

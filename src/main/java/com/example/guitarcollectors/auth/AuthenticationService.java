@@ -10,6 +10,7 @@ import com.example.guitarcollectors.model.Role;
 import com.example.guitarcollectors.model.User;
 import com.example.guitarcollectors.repository.UserRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -36,12 +37,12 @@ public class AuthenticationService {
                                 .build();
         }
 
-        // TODO:
-        // Handle the exception correctly
         public AuthenticationResponse authenticate(AuthenticationRequest request) {
                 authenticationManager.authenticate(
                                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-                var user = repository.findByEmail(request.getEmail()).orElseThrow();
+                var user = repository.findByEmail(request.getEmail()).orElseThrow(
+                                () -> new EntityNotFoundException("User with email: "
+                                                + request.getEmail() + " is not found"));
                 var jwtToken = jwtService.generateToken(user);
                 return AuthenticationResponse.builder()
                                 .token(jwtToken)
