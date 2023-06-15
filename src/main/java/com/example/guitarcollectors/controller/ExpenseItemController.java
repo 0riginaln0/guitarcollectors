@@ -66,7 +66,6 @@ public class ExpenseItemController {
 
     // Показать расходы по определённой статье
     @GetMapping("/charges/{expenseItemId}")
-    @Transactional
     public ResponseEntity<List<Charge>> getChargesForExpenseItem(@PathVariable Long expenseItemId) {
         return new ResponseEntity<>(expenseItemService.getChargesForExpenseItem(expenseItemId), HttpStatus.OK);
     }

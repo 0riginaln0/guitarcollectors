@@ -31,6 +31,7 @@ public class ChargeService {
 
     // Добавить расход
     public Charge addNewCharge(Charge newCharge) {
+        // Проверка того, что есть заданная статья расхода
         expenseItemService.getExpenseItemById(newCharge.getExpenseItem().getId());
         newCharge.setChargeDate(LocalDateTime.now());
         Charge addedCharge = repository.save(newCharge);

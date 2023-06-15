@@ -42,7 +42,6 @@ public class ChargeController {
 
     // Добавить расход
     @PostMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @Transactional
     public ResponseEntity<Charge> addNewCharge(@RequestBody Charge newCharge) {
         validate(newCharge);
         Charge charge = chargeService.addNewCharge(newCharge);
