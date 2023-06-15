@@ -20,3 +20,5 @@ gradle-app.setting
 bin/
 bin/main/
 bin/default/
+
+secrets.properties
